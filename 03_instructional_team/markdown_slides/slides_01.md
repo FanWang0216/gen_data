@@ -115,7 +115,7 @@ $ echo "Data Sciences Institute"
 
 - **From variants to traits**
   - Mendelian vs. complex disease
-  - Inheritance models: dominant / recessive / **additive** (genotype coding 0/1/2)
+  - Inheritance models: dominant / recessive / additive (genotype coding 0/1/2)
 
 ##### By the end of this lecture, you should be able to define alleles/genotypes, recognize common variant classes, explain penetrance, and map a coded genotype into a simple regression model.
 
