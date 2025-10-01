@@ -11,7 +11,19 @@ paginate: true
 $ echo "Data Sciences Institute"
 ```
 
----
+----
+
+# What You’ll Learn Today 
+
+- Set up the regression models or table-based tests and choose appropriate genotype codings.
+
+- Interpret effect sizes, uncertainty, and evidence to make clear claims about variant–trait links.
+
+- Recognize key assumptions, power drivers, and the role of LD so you can judge how much to trust a finding.
+
+----
+
+# Association Testing
 
 - **Objective**: establish association between a trait of interest and a genetic marker.
 
@@ -216,7 +228,7 @@ $$
 
 # Estimating Effect Sizes - Risk Ratio (RR)
 
-- A nature measure of effect size is relative risk ratio: $R R=\frac{P(\text { disease } \mid \text { exposed })}{P(\text { disease } \mid \text { unexposed })}.$
+- A natural measure of effect size is relative risk ratio: $R R=\frac{P(\text { disease } \mid \text { exposed })}{P(\text { disease } \mid \text { unexposed })}.$
 - Exposure = genotype; recessive model: AA vs (Aa, aa).
 - In **case–control** or **genotype-ascertained samples**, group risks are **distorted**.
 - Therefore **RR cannot be validly estimated** from those designs.
@@ -276,7 +288,7 @@ $$
 
 # Properties of log Odds and log OR
 
-- Invariance: If we decide to reverse the roles of the binary outcomes and let $\pi$ be the probability of failure rather than success, then the logit parameter simple changes the sign.
+- Invariance: If we decide to reverse the roles of the binary outcomes and let $\pi$ be the probability of failure rather than success, then the logit parameter simply changes the sign.
 
 $$
 \operatorname{logit}(1-\pi)=-\operatorname{logit}(\pi) .
@@ -835,7 +847,7 @@ r-n_0 \frac{\exp (\hat{\alpha})}{1+\exp (\hat{\alpha})}-r_1=0 \Longrightarrow \e
 \end{gathered}
 $$
 
-- Variance calculation involves the second derivates and the Fisher's information.
+- Variance calculation involves the second derivatives and the Fisher's information.
 
 
 -----
@@ -999,7 +1011,7 @@ $$
 - We usually test genetic markers, not the actual causal mutation
 - A marker may be correlated with the true disease-causing variant $\rightarrow$ indirect association
 - Linkage disequilibrium (LD) between a marker and the causal variant creates an observed association with the phenotype
-   ![Sales Figure, w:500](./images/LD2.png) 
+   ![Sales Figure, w:450](./images/LD2.png) 
   
   
 ----
@@ -1513,7 +1525,7 @@ $$
 T=2\left(r_0 \log \left(\frac{r_0}{r n_0 / n}\right)+r_1 \log \left(\frac{r_1}{r n_1 / n}\right)+s_0 \log \left(\frac{s_0}{s n_0 / n}\right)+s_1 \log \left(\frac{s_1}{s n_1 / n}\right)\right) .
 $$
 
-- Note that the above formula can be written as (as we have seen for testing one proprotion)
+- Note that the above formula can be written as (as we have seen for testing one proportion)
 
 $$
 2 \sum \text { observed } \times \log \left(\frac{\text { observed }}{\text { expected }}\right)
@@ -1678,7 +1690,7 @@ $$
   - cases are oversampled compared to the population proportion of cases
   - $n_i$ are in fact random variables, while $r$ and $s$ are fixed based on the case-control sampling design.
 
-- So, the formation on page 101 of the Textbook is NOT appropriate!
+- So, the formulation on page 101 of the Textbook is NOT appropriate!
 
 - Can we still validly compare the two proportions?
 
@@ -1695,9 +1707,10 @@ $$
 ----
 --->
 
-# What's next
-- Population Substructure in Association Studies
-- Association Analysis in Family Designs
+# What's Next
+- Population substructure in association studies
+- Association analysis in family designs
 
 ### What questions do you have about anything from today?
+
 

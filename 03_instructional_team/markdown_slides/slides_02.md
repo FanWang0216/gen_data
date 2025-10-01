@@ -12,7 +12,15 @@ $ echo "Data Sciences Institute"
 
 ---
 
-# Population genetics
+# What You’ll Learn Today 
+
+- **Population structure & why it matters:** Stratification, admixture, and inbreeding - how they alter genotype proportions and can bias association results.
+- **Allele frequencies & Hardy-Weinberg equilibrium (HWE):** How to estimate allele frequency, derive expected genotype counts under HWE, and interpret/test departures (HWD).
+- **Variance inflation & interpretation:** How population structure inflate HWE test and implications for study design/quality control.
+- **Tutorial I: Navigating the genetic dataset**
+----
+
+# Population Genetics
 
 - A field concerned with genetic variation within and between populations over time and space.
 - By looking at genetic variation we can learn about  population history, migration patterns, and the impact of natural selection on genetic diversity.
@@ -28,34 +36,34 @@ $ echo "Data Sciences Institute"
 
 
 ---
-## Bottleneck effects
+## Bottleneck Effects
 
 - Natural events like a disaster that kills **at random** a large portion of the population can change the genetic structure of the population.
 
 ![bg right:50% w:500](./images/bottle.png)
 
 ---
-## Founder population
+## Founder Population
 
 - A founder effect occurs when a new colony is started by a few members of the original population.
-- For example: the Amish community of Pennsylvania. This population is descended from around 200 German immigrants who started their colony.
+- For example, the Amish community in Pennsylvania. This population is descended from around 200 German immigrants who started their colony.
 
 ![bg right:50% w:500](./images/founder.png)
 
 
 ---
 
-# Important concepts
+# Important Concepts
 - Key principles in population genetics that are important in association analysis: 
-  - Population Substructure
-  - Hardy Weinberg Equilibrium
-  - Population Substructure leads to Hardy Weinberg Disequilibrium.
+  - Population substructure
+  - Hardy-Weinberg equilibrium (HWE)
+  - Population substructure can lead to Hardy-Weinberg disequilibrium (HWD).
 
 ---
 
-# Estimation of allele frequency
+# Estimation of Allele Frequency
 
-- An individual has two copies of each autosomal (not sex) chromosomes.
+- An individual has two copies of each autosomal (non‑sex) chromosome.
    
     ![Sales Figure, w:700](./images/allele_freq.png) 
      
@@ -63,7 +71,7 @@ $ echo "Data Sciences Institute"
 
 ---
 
-# Estimation of allele frequency
+# Estimation of Allele Frequency
 
 - The allele proportion (frequency) in the population is the proportion of chromosomes carrying that allele.
 - Suppose we have a sample of n individuals from a population with a proportion p of A alleles.
@@ -72,7 +80,7 @@ $ echo "Data Sciences Institute"
 
 ---
 
-# Estimation of allele frequency
+# Estimation of Allele Frequency
 
 - $n_{AA},n_{Aa},n_{aa}$ = number of individuals with genotype AA, Aa, aa.
 - $n=n_{AA}+n_{Aa}+n_{aa}$
@@ -81,7 +89,7 @@ $ echo "Data Sciences Institute"
 
 ---
 
-# Estimation of allele frequency
+# Estimation of Allele Frequency
 
 - $\hat{p}$ is an unbiased estimator of $p$ when the sample is a **random sample with equal probability sampling** (each individual in the population has the same probability of being included).
 
@@ -93,7 +101,7 @@ $ echo "Data Sciences Institute"
 
 ---
 
-# Visualizing the geography of genetic variants
+# Visualizing the Geography of Genetic Variants
 
 - [http://popgen.uchicago.edu/ggv/](http://popgen.uchicago.edu/ggv/)
   
@@ -109,11 +117,11 @@ ___
 
 ---
 
-# Population substructure
+# Population Substructure
 
 ## Three common types of population substructure
 
-- Population Stratification
+- Population stratification
 - Population admixture
 - Population inbreeding
 
@@ -124,8 +132,8 @@ ___
 
 - Simplest form of population substructure.
 - Individuals in a population can be divided into disjoint strata.
-- Strata: ethnic, racial, geographic group.
-- Allele frequency can vary among strata.
+- Strata: ethnic, racial, or geographic groups.
+- Allele frequencies can vary among strata.
     ![bg right:40% w:500](./images/pop_euro.png)
 
 ---
@@ -140,9 +148,9 @@ ___
 
 # Population Admixture
 
-- If allele frequency differs between these populations, then the probability that an individual carries an allele depends on the mixture of that individual ancestry.
+- If allele frequency differs between these populations, then the probability that an individual carries an allele depends on the mixture of that individual’s ancestry.
 
-- If different disease rates across populations, you can have **SPURIOUS ASSOCIATIONS**.
+- If disease rates differ across populations, **spurious associations** can arise.
 
   - E.g., Allele frequencies and the percentage with diabetes, stratified by the number of great grandparents from a hypothetical ancestral group (population X):
 
@@ -156,16 +164,16 @@ ___
 
 # Population Inbreeding 
 
-- Preference of mating among relatives in a population or because of geographic isolation restricts mating choices.
+- A preference for mating among relatives, or geographic isolation, restricts mating choices.
    ![Sales Figure, w:600](./images/pop_inbreed.png) 
 
 ---
 
-# Inbreeding coefficient
+# Inbreeding Coefficient
 
 - The inbreeding coefficient:
-     $F$ = probability that a random individual in a population inherits two copies of the same allele from a common ancestor.
-- In large, random mating populations $F=0$.
+     $F$ = probability that a random sampled individual in a population inherits two copies of the same allele from a common ancestor.
+- In large, randomly mating populations, $F=0$.
 
 ![bg right:50% w:600](./images/Inbreed_family.jpg) 
 
@@ -174,13 +182,13 @@ ___
 
 # Population Inbreeding 
 
-- Inbreeding tends to **increase the number of homozygous** in a population, and so inbred populations tend to have **higher** than expected **frequency of rare recessive disorders**. 
+- Inbreeding tends to **increase the number of homozygotes** in a population, and so inbred populations tend to a **higher‑than‑expected frequency of rare recessive disorders**. 
 
  ![bg right:50% w:500](./images/inbreed_pop2.png) 
 
 ---
 
-# Hardy Weinberg Equilibrium (HWE)
+# Hardy-Weinberg Equilibrium (HWE)
 
 - In 1908, Hardy and Weinberg independently derived a formula relating the genotype frequencies in offspring to allele frequencies in parents.
 
@@ -192,9 +200,9 @@ ___
 
 ---
 
-# Hardy Weinberg Equilibrium
+# Hardy-Weinberg Equilibrium
 
-- Let **$p$** be **the frequency of A allele**.
+- Let **$p$** be **the frequency of the A allele**.
 - After one generation of random mating: 
 $𝑃(𝐴𝐴)=p^2$, $𝑃(𝐴𝑎)=2𝑝𝑞$, $𝑃(𝑎𝑎)=𝑞^2$.
 - Thus, with random mating, the number of A alleles in the offspring generation $\sim 𝐵𝑖𝑛(2,𝑝)$.
@@ -212,7 +220,7 @@ $𝑃(𝐴𝐴)=p^2$, $𝑃(𝐴𝑎)=2𝑝𝑞$, $𝑃(𝑎𝑎)=𝑞^2$.
 
 # Testing for HWE
 - **The Pearson Goodness of Fit Test for HWE**:
-- $𝐻_{0}$: HWE holds.  Vs  $𝐻_{1}$: HWE does not hold.
+- $𝐻_{0}$: HWE holds;  vs.  $𝐻_{1}$: HWE does not hold.
 - Given a sample size $n$ from the population:
 
 - |            | AA                     | Aa    | aa    |   |
@@ -226,7 +234,7 @@ $𝑃(𝐴𝐴)=p^2$, $𝑃(𝐴𝑎)=2𝑝𝑞$, $𝑃(𝑎𝑎)=𝑞^2$.
 
 # Exercise
 
-- Assume you observe that the proportion of a population affected with sickle cell anemia is 0.01. Assuming an autosomal recessive diseasmodel and HWE, estimate the frequency of the sickle cell mutation at the hemoglobin locus in this population.
+- Assume you observe that the proportion of a population affected with sickle cell anemia is 0.01. Assuming an autosomal recessive disease model and HWE, estimate the frequency of the sickle cell mutation at the hemoglobin locus in this population.
 
 ---
 
@@ -270,11 +278,11 @@ $𝑃(𝐴𝐴)=p^2$, $𝑃(𝐴𝑎)=2𝑝𝑞$, $𝑃(𝑎𝑎)=𝑞^2$.
 
 # Why does HWE fail?
 
-- Rejecting the HWE provides some evidence that HWE does not hold – **Hardy Weinberg Disequilibrium (HWD)**.
+- Rejecting the HWE provides some evidence that HWE does not hold – **Hardy-Weinberg disequilibrium (HWD)**.
 - Many reasons for HWD: **population substructure**, **selection**, **genotyping error**, **association with trait in case-control design**.
 - At a disease locus we usually have HWD in cases: if a minor allele homozygous confers greater risk to disease, selecting individuals with disease results in more homozygous and less heterozygous than expected. 
-- With population substructure or inbreeding, heterozygous individuals tends to be underrepresented relative to HWE.
-- In GWAS we use HWE test in controls only to identify variants which might be problematic. 
+- With population substructure or inbreeding, heterozygous individuals tend to be underrepresented relative to HWE.
+- In GWAS we use the HWE test in controls only to identify variants which might be problematic. 
 
 ---
 
@@ -340,7 +348,7 @@ $$
 # Population Inbreeding and Genotype Distributions
 
 - With inbreeding there is a positive probability that an individual inherits the exact same A (or a) allele from both parents.
-- The inbreeding coefficient F = P(an randomly sampled individual inherits the same copy from both parents).
+- The inbreeding coefficient F = P(a randomly sampled individual inherits the same copy from both parents).
   - With probability F, the two alleles are **identical by descent** (IBD).
   - With probability 1−F, they are drawn independently from the gene pool (HWE frequencies).
 ---
@@ -357,7 +365,7 @@ $$
 
 ---
 
-# Measuring the departure of HWE
+# Measuring the Departure of HWE
 - An estimate of the inbreeding coefficient is **$\hat{F}=1-O / E$**.
 
 - O is the number of heterozygotes and E is the expected number of heterozygotes based on HWE.
@@ -370,7 +378,7 @@ $$
 
 - Bottlenecks and founder effects: Events that reduce genetic diversity or create isolated groups can lead to allele frequency differences between populations.
 
-- Hardy–Weinberg Equilibrium (HWE): Predicts genotype frequencies under random mating; deviations can indicate factors like substructure, selection, inbreeding, or genotyping errors.
+- Hardy–Weinberg equilibrium (HWE): Predicts genotype frequencies under random mating; deviations can indicate factors like substructure, selection, inbreeding, or genotyping errors.
 
 - Population structure: Stratification and admixture can cause allele frequency differences between subgroups, while inbreeding increases homozygosity within subpopulations. All three factors can alter genotype proportions relative to HWE expectations.
 
@@ -382,18 +390,18 @@ $$
 - If the genetic locus has no effect on disease then $P(Y=1 \mid aa)=P(Y=1 \mid A a)=P(Y=1 \mid AA)$.
 - **Dominant**: $P(Y=1 \mid AA)=P(Y=1 \mid A a)=1, P(Y=1 \mid a a)=0$.
 - **Recessive**: $P(Y=1 \mid A A)=1, P(Y=1 \mid A a)=P(Y=1 \mid a a)=0$.
-- These deterministic models **only hold rarely for simple Mendelian diseases**.
+- These deterministic models **hold only rarely for simple Mendelian diseases**.
 - More realistic are stochastic models with reduced penetrance and phenocopies.
 
 ---
 
 # Recap: Simple Disease Models 
 
-- Reduced penetrance: the probability is less than 1 above.
+- Reduced penetrance: the probabilities above are less than 1.
   - e.g. in the recessive model $\mathrm{P}(\mathrm{Y}=1 \mid \mathrm{DD})<1$.
 
 - Phenocopy means probability $P(Y=1 \mid d d)>0$ 
-  - disease can be caused by a different genetic locus than the one under consideration.
+  - Disease can be caused by a different genetic locus than the one under consideration.
   
 - **Additive** if the penetrance of the heterozygous genotype is midway between the two homozygous genotypes.
 
@@ -406,7 +414,7 @@ $$
 
 
 ---
-# Tutorial I : Navigating the genetic dataset 
+# Tutorial I: Navigating the Genetic Dataset
 
 - The goal is to help beginners understand how genotype data is stored and accessed (in PLINK), and prepare them for downstream tasks like GWAS and QC.
 
@@ -414,7 +422,7 @@ $$
 
 ---
 
-# What's next: Genetic association studies
+# What's Next: Genetic Association Studies
 
 - Part 1: Given a trait, should we perform genetic studies and under what conditions?
 
@@ -435,15 +443,15 @@ $$
     
 ---
 
-# Heritabtility
+# Heritability
 
 - Heritability analyses are designed to show that diseases, or phenotypes more generally, have a genetic basis.
-- Q: what proportion of the total phenotypic variation in a population can be attributed to genetic factors, as opposed to environmental or random factors.
+- Q: what proportion of the total phenotypic variation in a population can be attributed to genetic factors, as opposed to environmental or random factors?
 
 
 ---
 
-# Heritabtility
+# Heritability
 
 ![Sales Figure, w:1000](./images/heritability.png) 
 

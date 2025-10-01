@@ -13,6 +13,14 @@ $ echo "Data Sciences Institute"
 
 ----
 
+# What You’ll Learn Today
+
+- **Why population structure matters:** Recognize how stratification and relatedness inflate association signals, learn core fixes (genomic control, PCA covariates, mixed models) as well as common pitfalls.
+- **Use PCs and LMMs effectively:** Apply principal components for visualization/adjustment and deploy linear mixed models to obtain calibrated tests at scale.
+- **Genotype imputation in practice:** Understand the reference-panel, LD-driven inference, quality metrics (e.g., INFO/$r^2$), and common pitfalls.
+
+-----
+
 # Population Stratification
 
 - Different subgroups present within your population.
@@ -30,7 +38,7 @@ $ echo "Data Sciences Institute"
 ----
 
 
-# Population structure acts as a confounder
+# Population Structure Acts as a Confounder
 
 ![Sales Figure, w:400](./images/PopS2.png) 
 
@@ -52,7 +60,7 @@ $ echo "Data Sciences Institute"
 
 ----
 
-# Approaches to adjust for population stratification
+# Approaches to Adjust for Population Stratification
 
 - Genomic Control
 - Clustering approaches
@@ -78,7 +86,7 @@ $$
 
 -----
 
-# Key Principles of Genomic control
+# Key Principles of Genomic Control
 
 - Most SNPs are expected not associated with the trait.
 - If many SNPs show inflated test statistics $\rightarrow$ evidence of stratification.
@@ -95,7 +103,7 @@ $$
 
 # STRUCTURE 
 
-- Bayesian clustering model (Pritchard, Stephens, Donnely, Genetics 2000) **infer the latent population structure** by a stratified analysis.
+- Bayesian clustering model (Pritchard, Stephens, Donnelly, Genetics 2000) **infer the latent population structure** by a stratified analysis.
 - Assigns individuals to $K$ source populations; under admixture, each individual can have **fractional ancestry** across populations.
 - Works best with **strong population structure** (a few distinct ancestries) and **many variants / ancestry-informative markers (AIMs)**.
 
@@ -201,7 +209,7 @@ $$
 
 - Goal: use the fewest PCs that retain the relevant structure while avoiding noise/overfit.
 - For data visualization, only a few are needed.
-- TO adjustment for stratification, the right number is data-dependent.
+- To adjustment for stratification, the right number is data-dependent.
 - Inspect explained variance / scree plot and add PCs until major structure is captured.
   ![bg right:50% w:600](./images/pca5.png)
 
@@ -236,7 +244,7 @@ $$
 
 -------
 
-# Mixed effect models
+# Mixed Effect Models
 
 - Mixed effect models can model population structure, family structure and cryptic relatedness.
 - Model phenotypes using a mixture of fixed effects (SNPs) and random effects (family structure).
@@ -328,7 +336,7 @@ $$
 -->
 ------
 
-# Q–Q plot as a diagnostic tool
+# Q–Q plot as a Diagnostic Tool
 
 - Order SNPs according to their p-values.
 
@@ -377,7 +385,7 @@ Genotype data with missing data at untyped SNPs (grey question marks)
 
 ------
 
-# UK Biobank imputation
+# UK Biobank Imputation
 
 - UK Biobank released data on $\sim 500,000$ individuals, including genotypes and thousands of phenotypes.
 - Each sample was initially genotyped with $<1$ million SNPs.
@@ -407,7 +415,7 @@ Genotype data with missing data at untyped SNPs (grey question marks)
 
 - In GWAS, we typically start with ~500K genotyped SNPs.
 - To impute additional SNPs, we require a **reference dataset** containing observed genotypes at those untyped sites.
-- Examples of reference resources: HapMap, 1000 Genomes, UK Biobank, TopMed.
+- Examples of reference resources: HapMap, 1000 Genomes, UK Biobank, TOPMed.
 - **Haplotypes:** each individual genotype can be decomposed into two haplotypes, inherited from each parent.
 
 

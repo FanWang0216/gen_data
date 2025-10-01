@@ -13,6 +13,18 @@ $ echo "Data Sciences Institute"
 
 ----
 
+# What You’ll Learn Today
+
+- **Modeling association with population structure:** 
+  - When and how to use linear mixed models to handle relatedness and population structure.
+- **Discoveries at scale:** 
+  - How to control error rates across millions of tests (Bonferroni genome-wide threshold, FDR). 
+- **Combine evidence across studies:** 
+  - GWAS meta-analysis (combine $p$-values or effect sizes; fixed vs. random effects) 
+  - how to interpret heterogeneity.
+
+-----
+
 # Regression Approach
 
 - Generalized linear models (GLMs)
@@ -228,7 +240,7 @@ $$
 
 - Power of TDT is expected to be lower than for case - control design with the same number of cases because, e.g., homozygous parents do not contribute.
 - Also, the trio design is more expensive: three genotypes compared to two in a case-control design.
-- It can be difficult to obtain parental genotypes for lateonset diseases, e.g. Alzheimer's disease.
+- It can be difficult to obtain parental genotypes for late-onset diseases, e.g. Alzheimer's disease.
 - Other family-based designs: discordant sibships, trios with multiple affected siblings, multi-generational pedigrees.
 
 -----
@@ -264,7 +276,7 @@ $$
 
 # Exercises
 
-1. What is the alternative hypothesis for a TDT test (or any FBAT test), and how does that compare with the alternative of a test of association from a casecontrol or cohort study? Why is this important from a practical perspective?
+1. What is the alternative hypothesis for a TDT test (or any FBAT test), and how does that compare with the alternative of a test of association from a case-control or cohort study? Why is this important from a practical perspective?
 2. The TDT is a conditional test. What are the random variables used in computing the null distribution of the test, and what variables are being conditioned on?
 
 
@@ -284,7 +296,7 @@ $$
 
 -----
 
-# GWAS of Kidsney stone disease
+# GWAS of Kidney Stone Disease
 
 - In a typical GWAS we perform millions of tests. How do we account for that?  What Significance level should we use?
   ![Sales Figure, w:900](./images/GWAS1.png) 
@@ -366,7 +378,7 @@ $$
 
 ------
 
-# BenjaminiHochberg (BH) procedure
+# Benjamini–Hochberg (BH) procedure
 
 - Benjamini and Hochberg (1995) procedure can be used to control the FDR.
 - Rank the $M$ p-values from smallest to largest:

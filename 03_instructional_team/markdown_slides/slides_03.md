@@ -13,6 +13,14 @@ $ echo "Data Sciences Institute"
 
 ---
 
+# What You’ll Learn Today 
+
+- **Aggregation & recurrence risk:** Detect familial clustering in binary traits and compute and interpret the recurrence risk ratio.
+- **Heritability concepts & estimation:** Partition phenotypic variance and estimate heritability using twin studies.
+- **Segregation analysis:** Test Mendelian transmission models (dominant or recessive) using family data, and account for ascertainment bias in study design and interpretation.
+
+-----
+
 ### Part 1: Given a trait, should we perform genetic studies and under what conditions?
   
 - Most researchers would not undertake a genetic analysis without enough evidence
@@ -64,7 +72,7 @@ $ echo "Data Sciences Institute"
 
 # Recurrence Risk Ratio
 
-- Recurrent risk ratio measures the strength of the genetic aggregation among relatives.
+- Recurrence risk ratio measures the strength of the genetic aggregation among relatives.
 
 - It is defined as a probability ratio which compares the probability of a study subject being affected given that a relative is affected to the general risk in the population (i.e. the prevalence).
 $$ 
@@ -122,7 +130,7 @@ $$
 
 # Recurrence risk ratio
 
-- All monogenetic diseases have high recurrence risk ratios.
+- All monogenic diseases have high recurrence risk ratios.
 
 - The risk ratio for the complex diseases are relatively small.
   - Polygenic basis, environmental influence and incomplete penetrance → Weaker familial clustering
@@ -141,7 +149,7 @@ $$
 
 - Cautions: due to shared exposure to similar environment, it's possible that a disease having no genetic etiology could also show evidence of familial clustering.
 
-  - E.g. flue, infectious disease: $P\left(Y_2=1 \mid Y_1=1\right)$ for relatives is most likely greater than the population prevalence $K$, so $\lambda_R>1$.
+  - E.g. flu, infectious disease: $P\left(Y_2=1 \mid Y_1=1\right)$ for relatives is most likely greater than the population prevalence $K$, so $\lambda_R>1$.
 
 - In fact, $\lambda_S$ for siblings is most likely greater than $\lambda_C$ for first cousins as well because of the greater amount of shared environment.
 
@@ -468,7 +476,7 @@ $$ p(AA \mid \text { affected })=\frac{p^2}{p^2+2 p(1-p)^2}=\frac{p}{2-p} \appro
 
 - Design: use a random sample of matings between affected (assumed to have genotype $Aa$) and unaffected individuals ( $aa$ ).
 
-- Data: observe $n$ offsprings in total, among which $n_{\text {Affected }}$ offsprings are affected by the disease.
+- Data: observe $n$ offspring in total, among which $n_{\text {Affected }}$ offspring are affected by the disease.
 
 ---
 
