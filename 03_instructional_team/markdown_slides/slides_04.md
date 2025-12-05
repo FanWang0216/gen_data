@@ -1,7 +1,6 @@
 ---
 marp: true
 theme: dsi_certificates_theme
-_class: invert
 paginate: true
 ---
 
@@ -738,7 +737,7 @@ $$
 
 -  $\beta$ also equals to the log-odds ratio of having genotype Aa among cases compared with having genotype Aa among controls.
 
-----
+---
 
 # Logistic Regression Likelihood
 
@@ -756,6 +755,10 @@ $$
 $$
 P\left(Y_i=y_i \mid X_i=x_i\right)=\frac{\exp \left(\left(\alpha+\beta x_i\right) y_i\right)}{1+\exp \left(\alpha+\beta x_i\right)}.
 $$
+
+---
+
+# Logistic Regression Likelihood
 
 - Assuming independence:
 
@@ -805,6 +808,7 @@ $$
 # MLE Derivation Details (More Advanced)
 
 - Note that $r_0: Y=1, X=0$, $r_{1}: Y=1, X=1$, $s_0: Y=0, X=0$, $s_1: Y=0, X=1$.  We can simplify the log likelihood:
+---
 
 $$
 \begin{gathered}

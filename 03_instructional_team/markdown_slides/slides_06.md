@@ -1,7 +1,6 @@
 ---
 marp: true
 theme: dsi_certificates_theme
-_class: invert
 paginate: true
 ---
 
@@ -94,8 +93,6 @@ $$
 - Ratio measures inflation due to stratification.
 - Stratification should affect all loci equally $\rightarrow$ similar inflation across SNPs.
 - Adjust each statistic by rescaling with GC $\lambda$.
-<br>
-
 - Genomic control uses **a constant adjustment factor for all SNPs**.
 - Can lead to overadjustment at some SNPs and underadjustment at other SNPs.
 

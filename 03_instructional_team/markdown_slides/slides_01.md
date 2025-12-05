@@ -1,7 +1,6 @@
 ---
 marp: true
 theme: dsi_certificates_theme
-_class: invert
 paginate: true
 ---
 # Introduction to Statistical Genetics
@@ -128,7 +127,7 @@ $ echo "Data Sciences Institute"
 
 ---
 
-![bg right:100% w:1000](./images/human_genome.png)
+![bg center w:800](./images/human_genome.png)
 
 ---
  # Deoxyribonucleic Acid (DNA)

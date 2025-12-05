@@ -1,7 +1,6 @@
 ---
 marp: true
 theme: dsi_certificates_theme
-_class: invert
 paginate: true
 ---
 
@@ -97,7 +96,7 @@ $$
 
 - ##### The observed recurrence risk ratio for DZ twins is bigger than that for siblings. Any possible explanation for that?
 
-![bg right:50% w:300](./images/relative1.png)
+![bg right:50% w:250](./images/relative1.png)
 
 ---
 
@@ -135,7 +134,7 @@ $$
 - The risk ratio for the complex diseases are relatively small.
   - Polygenic basis, environmental influence and incomplete penetrance → Weaker familial clustering
   
-  ![bg right:50% w:500](./images/riskratio.png) 
+  ![bg right:50% w:400](./images/riskratio.png) 
 
 ---
 
@@ -290,6 +289,9 @@ $$
 
   $$ V_G=V_A+V_D .$$
 
+---
+
+# Heritability - General Model
 
 - Then we will have two definitions of heritabiilty:
   - the broad sense heritability $h^2=\frac{V_G}{V_Y}$

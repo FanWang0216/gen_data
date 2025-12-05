@@ -1,7 +1,6 @@
 ---
 marp: true
 theme: dsi_certificates_theme
-_class: invert
 paginate: true
 ---
 
@@ -23,7 +22,7 @@ $ echo "Data Sciences Institute"
   - GWAS meta-analysis (combine $p$-values or effect sizes; fixed vs. random effects) 
   - how to interpret heterogeneity.
 
------
+---
 
 # Regression Approach
 
@@ -52,7 +51,7 @@ $$
 - Particularly useful when measurements are made on clusters or related individuals (family).
 - Model phenotypes using a mixture of fixed effects (SNPs, covariates) and random effects (family structure).
 
------
+---
 # Linear Mixed Models (LMM)
 - Basic linear model: $Y=X \beta+C \alpha+\varepsilon$
 
@@ -65,7 +64,7 @@ $$
 - Genetic covariance matrix: $K=\frac{G G^T}{M}$
   - $G: N \times M$ genotype matrix; $N$ : number of individuals; $M$ : number of SNPs.
 - In GWAS, both $N$ and $M$ are very large $\rightarrow$ requires efficient methods
------
+---
 
 # Linear Mixed Models (LMM)
 
@@ -75,7 +74,7 @@ $$
 - LMMs also allow us to estimate the individual random effects($\mu$)
 
 
------
+---
 
 # Association testing in the LMM framework
 
@@ -92,6 +91,9 @@ $$
 \tilde{Y}=u+\varepsilon
 $$
 
+---
+
+# Association testing in the LMM framework
   - $E(u)=0, \operatorname{Var}(u)=\sigma_g^2 K, \operatorname{Var}(\varepsilon)=\sigma_e^2 I$
   - Using REML/AI-REML we can estimate $\widehat{\sigma_g^2}$ and $\widehat{\sigma_e^2}$.
   - We can also get BLUP (best linear unbiased predictors)
@@ -136,7 +138,7 @@ $$
   - Software: https://rgcgithub.github.io/regenie/
 
 
------
+---
 
 # Heritability Estimation from GWAS
 
@@ -180,7 +182,7 @@ $$
 - $\quad h^2=\frac{\widehat{\sigma_g^2}}{\sigma_Y^2}$
 
 
------
+---
 
 # Family-based Designs
 
@@ -188,7 +190,7 @@ $$
 - Example: compare the genotypes of affected individuals with their unaffected siblings  
 - Using siblings as controls removes confounding from **population stratification**  
 
------
+---
 
 # Family-based designs 
 
@@ -243,7 +245,7 @@ $$
 - It can be difficult to obtain parental genotypes for late-onset diseases, e.g. Alzheimer's disease.
 - Other family-based designs: discordant sibships, trios with multiple affected siblings, multi-generational pedigrees.
 
------
+---
 
 # Family-based association test (FBAT)
 
@@ -281,7 +283,7 @@ $$
 
 
 
------
+---
 ## Complications when testing association with millions of markers in large GWAS studies
 
 - So far, we have discussed one test/one genetic marker at a time.
@@ -294,7 +296,7 @@ $$
 # Multiple Testing 
 
 
------
+---
 
 # GWAS of Kidney Stone Disease
 
@@ -344,7 +346,7 @@ $$
 - If markers are not independent (due to linkage disequilibrium) the Bonferroni adjustment is conservative.
 - E.g. extreme case: only one independent marker among $M$ and the true FWER is $\frac{\alpha}{M}$.
 
------
+---
 
 # Bonferroni threshold for GWAS
 
@@ -352,7 +354,7 @@ $$
 - This corresponds to a finding by chance 1 in 20 GWAS studies.
 - Large sample sizes are needed for such a stringent threshold.
 
------
+---
 
 # False Discovery Rate (FDR)
 
@@ -362,7 +364,7 @@ $$
 - FDR is less accepted in the GWAS setting, but useful for GWAS where results are followed up.
 
 
------
+---
 
 # False Discovery Rate (FDR)
 
@@ -376,7 +378,7 @@ $$
 - The false discovery rate is $\mathrm{E}\left(\frac{V}{R}\right)$ (expectation of false discovery proportion).
 - Goal: keep the FDR below a specific threshold, e.g. 0.05 or 0.10.
 
-------
+----
 
 # Benjamini–Hochberg (BH) procedure
 
@@ -396,7 +398,7 @@ $$
 - Find largest $i$ for which this inequality holds, and then reject tests that correspond to $1, \ldots, i$.
 - For dependent tests, extensions are available (e.g. Benjamini-Yekutieli 2001).
 
------
+---
 
 
 # Example
@@ -412,7 +414,7 @@ $$
 FDR = 5% reject hypotheses 1-8 –> more than Bonferroni that rejects only two.
 
 
------
+---
 
 # Meta-analysis
 
@@ -426,7 +428,7 @@ FDR = 5% reject hypotheses 1-8 –> more than Bonferroni that rejects only two.
   - Example: the largest GWAS on height (2022) analyzed 5.4 million individuals across diverse ancestries and identified 12,111 independent SNPs.
 - Purpose: to combine information from multiple independent studies.
 
------
+---
 
 # Meta-analysis
 
@@ -454,7 +456,7 @@ $$
 Z_m=\left(\frac{1}{\sqrt{\sum_k n_k}} \sum_k \sqrt{n_k} Z_{m k}\right) \sim N(0,1).
 $$
 
------
+---
 
 # Fixed-effects meta-analysis
 
@@ -474,7 +476,7 @@ Random-effects meta-analysis.
 - **Combined effect estimates the mean of the distribution of true effects**.
 
 
------
+---
 
 # Fixed-effect model
 
@@ -501,7 +503,7 @@ $$
 
 
 
------
+---
 
 # Random-effect model
 
@@ -529,7 +531,7 @@ $$
 - Many different methods, e.g. DerSimonian and Laird (DL)
 
 
------
+---
 
 # Fixed vs. Random Effect model
 
@@ -544,7 +546,7 @@ $$
 
 ![Sales Figure, w:700](./images/GWAS3.png) 
 
------
+---
 
 # What's Next
 

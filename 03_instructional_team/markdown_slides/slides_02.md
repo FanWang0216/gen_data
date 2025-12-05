@@ -1,7 +1,6 @@
 ---
 marp: true
 theme: dsi_certificates_theme
-_class: invert
 paginate: true
 ---
 # Population Genetics
@@ -453,11 +452,8 @@ $$
 
 # Heritability
 
-![Sales Figure, w:1000](./images/heritability.png) 
+![Sales Figure, w:900](./images/heritability.png) 
 
 ---
 
 ### What questions do you have about anything from today?
-
----
-
