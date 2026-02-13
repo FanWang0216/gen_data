@@ -1,6 +1,7 @@
 ---
 marp: true
-theme: dsi_certificates_theme
+theme: xaringan-themer
+_class: invert
 paginate: true
 ---
 # Introduction to Statistical Genetics
@@ -37,8 +38,6 @@ $ echo "Data Sciences Institute"
 
 # Background Needed
 
-- Pre-reqs: [Unix Shell module](https://github.com/UofT-DSI/shell) and [R module](https://github.com/UofT-DSI/r).
- 
 - Assume no formal training in genetics.
   - Basic concepts in molecular genetics will be introduced in the class.
 - Familiarity with key concepts in statistical inference, including:
@@ -51,11 +50,10 @@ $ echo "Data Sciences Institute"
 
 # GitHub Repo
 
-[https://github.com/UofT-DSI/stat_gen](https://github.com/UofT-DSI/stat_gen)
+[https://github.com/UofT-DSI/gen_data/](https://github.com/UofT-DSI/gen_data/)
 
 - Schedule
-- These slides (HTML & PDF)
-- Our database for live coding
+- These slides (PDF)
 - All in-class code
 - Assignment details and rubrics
 - Policies, due dates, etc
@@ -71,34 +69,6 @@ $ echo "Data Sciences Institute"
 - Other useful resources beyond the scope of this course:
   - **Biomedical Data Resource Guide**: [StatsUpAI – Curated Biomedical Datasets](https://statsupai.org/datasets.html)
 
-
----
-
-
-# Assignments
-
-- Three assignments (TBA), released on Monday of each week.
-- Broken into three sections:
-  - Section 1 focuses on review of molecular genetics and basic genetic models
-  - Section 2 focuses on population genetics & consequences on genetic association studies
-  - Section 3 focuses on genome-wide association studies
-- Review questions/answers in Office Hours course support
-
----
-
-
-# Grading 
-
-- Pass/Fail. Do the work, pass the course :) 
-
-- Assignment 1: Navigating Genetic Dataset to Understand Genotype – Phenotype Data Structure
-- Assignment 2: TBA
-- Assignment 3: TBA
-- Review rubrics for full details
-
-- Class Attendance: *not graded this cohort, come anyway!*
-  - Let me or course support know if you are unable to attend a lesson
-  
 ---
 
 
@@ -127,7 +97,7 @@ $ echo "Data Sciences Institute"
 
 ---
 
-![bg center w:800](./images/human_genome.png)
+![bg right:100% w:1000](./images/human_genome.png)
 
 ---
  # Deoxyribonucleic Acid (DNA)

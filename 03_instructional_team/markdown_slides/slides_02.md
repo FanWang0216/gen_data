@@ -1,9 +1,10 @@
 ---
 marp: true
-theme: dsi_certificates_theme
+theme: dsi-certificates-theme
+_class: invert
 paginate: true
 ---
-# Population Genetics
+# Building Queries: An Exploration
 
 ```
 $ echo "Data Sciences Institute"
@@ -11,449 +12,484 @@ $ echo "Data Sciences Institute"
 
 ---
 
-# What You’ll Learn Today 
+# Building Queries:
 
-- **Population structure & why it matters:** Stratification, admixture, and inbreeding - how they alter genotype proportions and can bias association results.
-- **Allele frequencies & Hardy-Weinberg equilibrium (HWE):** How to estimate allele frequency, derive expected genotype counts under HWE, and interpret/test departures (HWD).
-- **Variance inflation & interpretation:** How population structure inflate HWE test and implications for study design/quality control.
-- **Tutorial I: Navigating the genetic dataset**
-----
+## $\rightarrow$ **Fundamental Three Commands**
 
-# Population Genetics
+## Two More Commands
 
-- A field concerned with genetic variation within and between populations over time and space.
-- By looking at genetic variation we can learn about  population history, migration patterns, and the impact of natural selection on genetic diversity.
+## Putting Things Together with JOIN
+
+---
+
+# Fundamental Three Commands
+
+---
+
+# Fundamental Three Commands
+
+- Our first three commands (`SELECT`, `FROM`, `WHERE`) are essential to nearly every SQL query
+
+- The template for our initial SQL statement is as such:
+
+    `SELECT` : _the columns we want to retrieve_
+
+    `FROM` : _the table we are querying_
+
+    `WHERE` : _filters/conditions (optional)_
+
+    `ORDER BY` : _column sorting: ascending_ `ASC` _or descending_ `DESC` _(optional)_
+
+    `LIMIT` : _how many rows we want to return (optional)_
+
+---
+
+# Fundamental Three Commands
+
+  - Always specified in this order:
+    - `SELECT` will come first
+    - `FROM` will come after `SELECT`
+        - when we are querying more than one table at a time, each will come after `FROM` but before `WHERE` (more on this later)
+    - `WHERE` will come after `FROM` 
+    - `ORDER BY` will come after `WHERE` clauses
+
+---
+
+# Fundamental Three Commands
+
+- We'll sometimes use the `LIMIT` clause to look at data
+  - This comes at the very end of a query
+  - `LIMIT` shouldn't be used for analytics unless you have a specific reason
+    - `ORDER BY` often impacts the usefulness of `LIMIT` 
+- Remember:
+  - In SQL, we use two dashes `--` to comment out lines, rather than `#`
+---
+
+# SELECT Command
+
+- At its simplest `SELECT` specifies column names we are retrieving
+  - commas come between each column name
+      - `SELECT student, course, grade ...`
+  - column names with a space need to be enclosed in square brackets
+      - `SELECT [poorly named column], better_column_name, AnotherColumnName`
+
+---
+
+# SELECT Command
+
+- Within `SELECT` statements we can perform manipulations on columns
+  - e.g. rename a column
+      - `SELECT [poorly named column] AS better_col`
+  - combine two text columns
+  - perform math on a numeric column
+  - ...and many more things
+
+---
+
+# SELECT Command
+
+- We can use `SELECT` to perform math without a `FROM` statement
+  - `SELECT 1 + 1`
+  - `SELECT 10*5, cos(2), pi()`
+- And we can use `SELECT` to specify constant values
+  - `SELECT 2025 AS this_year, 'April' AS this_month`
+- When selecting columns, they need to exist in the table!
+
+---
+
+# FROM Command
+
+- `FROM` statements indicate which table the data is from and where the table is located
+  - in more complicated RDBMs, you will often have multiple databases on the same server and multiple schema within those databases
+    - a fully qualified location of a table would thus be `database.schema.table`
+- `SELECT * FROM table_name` indicates _everything_ in the table
+
+- Best practice suggests that we should explicitly call each column, even if we want all of them
+    - **Why do we think this is the case?** 💬💭 **Think, Pair, Share**
+ 
+---
+
+# SELECT & FROM
+
+(`SELECT` & `FROM` live coding)
+
+---
+
+# WHERE Command
+
+- `WHERE` clauses are conditions that the query will follow
+- When we want to have multiple conditions, we use a single `WHERE` and then additional logical operations
+- `WHERE` clauses always return rows evaluating to `TRUE`
+  - Follows Boolean rules if more than one condition is present
+
+---
+
+# WHERE Command
+
+```
+    SELECT *
+    FROM students
+    WHERE first_name = 'Thomas'
+    AND last_name = 'Rosenthal'
+```
+
+- **Notice we put string values in single quotes**
+  - SQLite also allows double quotes, with a few minor caveats
+  
+---
+
+# WHERE Command
+
+### Logical Operators
+- `AND`
+- `OR`
+- `NOT`
+- `NOT IN`
+- equals: `=`
+- does not equal: `<>` `!=`  
+  - (flavour dependent)
+
+---
+
+# WHERE Command
+
+### Logical Operators (continued...)
+
+- greater than (equal to): `>` `>=` 
+- less than (equal to): `<` `<=`
+- `BETWEEN`
+- `EXISTS`
+  - table specific
+- `IS`
+  - `NULL` specific 
+  
+---
+
+# WHERE Command
+
+- `NULL` is not a value (it's the absence of a value)
+  - to check null values, we use `IS NULL` or `IS NOT NULL`
+  - `= NULL` will not work
+
+---
+
+# WHERE Command
+
+- `LIKE` allows for string wildcards
+- `%` specifies the wildcard placement
+  - `country_name LIKE 'and%'`
+      - Andorra
+  - `country_name LIKE '%and'`
+      - Finland, Iceland ...more
+  - `country_name LIKE '%and%'`
+      - all of the above, _plus_ Antigua and Barbuda, Netherlands, Rwanda ...more!
+  - `country_name LIKE '%an%d%'`
+      - Canada ...surely more!
+
+---
+
+# WHERE Command
+
+(`WHERE` live coding)
+
+---
+
+# What questions do you have about `SELECT`, `FROM`, `WHERE`?
+
+---
+
+# Building Queries:
+
+## Fundamental Three Commands
+
+## $\rightarrow$ **Two More Commands**
+
+## Putting Things Together with JOIN
 
 
 ---
 
-## Factors that affect patterns of genetic variation
+# Two More Commands
 
-![Sales Figure, w:700](./images/gene_variation.png) 
-    
-- By looking at genetic variation we can learn about  **population history**, **migration patterns**, and the **impact of natural selection on genetic diversity**.
-
-
----
-## Bottleneck Effects
-
-- Natural events like a disaster that kills **at random** a large portion of the population can change the genetic structure of the population.
-
-![bg right:50% w:500](./images/bottle.png)
-
----
-## Founder Population
-
-- A founder effect occurs when a new colony is started by a few members of the original population.
-- For example, the Amish community in Pennsylvania. This population is descended from around 200 German immigrants who started their colony.
-
-![bg right:50% w:500](./images/founder.png)
-
+- **`CASE`**: Implements conditional logic.
+- **`DISTINCT`**: Returns unique values.
 
 ---
 
-# Important Concepts
-- Key principles in population genetics that are important in association analysis: 
-  - Population substructure
-  - Hardy-Weinberg equilibrium (HWE)
-  - Population substructure can lead to Hardy-Weinberg disequilibrium (HWD).
+# CASE Command
+
+- `CASE` statements allow us to introduce conditional logic into our `SELECT` statements
 
 ---
 
-# Estimation of Allele Frequency
+# CASE Command
 
-- An individual has two copies of each autosomal (non‑sex) chromosome.
-   
-    ![Sales Figure, w:700](./images/allele_freq.png) 
+- They are generally similar to `if` or `if else` statements in python, R, and other languages
+  - When a condition is introduced, we check whether it evaluates to TRUE
+      - If it is true, we proceed with a desired command, calculation, value, etc
+      - If it is not true, we move to the next condition
+          - If it is true, we proceed with another desired command, calculation, value, etc
+              - ...all the way until we run out of conditions
+  - For all FALSE conditions, we can use an `ELSE` statement if we want to
+
+---
+
+# CASE Command
+
+- The results of a `CASE` statement will be a new column
+- Best practice is to name the new column using `AS new_column_name`
+
+```
+    CASE 
+      WHEN [something is true]
+        THEN [value or calculation]
+      WHEN [something else is true]
+        THEN [value or calcuation]
+      ELSE [value or calcuation]
+    END 
+```  
+
+---
+
+# CASE Command
+
+(`CASE` live coding)
+
+
+---
+
+# DISTINCT Command
+
+- Not all queries will result in unique rows (i.e. duplicates are present)
+  - **Can we think of why this is? Write your thoughts in the etherpad!**
+
+---
+
+# DISTINCT Command
+
+- `DISTINCT` has two possible spots within a query:
+  - One comes immediately after `SELECT`, before column names are specified
+      - e.g. `SELECT DISTINCT songs, albums, artists...`
+      - This `DISTINCT` will govern the entire query
+      
+  - The other comes within aggregation (we'll get to this later)
+      - e.g. `COUNT(DISTINCT products)`
+      - This `DISTINCT` will only affect this specific aggregation
+
+---
+
+# DISTINCT Command
+
+(`DISTINCT` live coding)
+
+---
+
+# Building Queries:
+
+## Fundamental Three Commands
+
+## Two More Commands
+
+## $\rightarrow$ **Putting Things Together with JOIN**
+
+---
+
+# Joining Tables
+
+- Joins are used to combine data stored in different tables into a single table
+
+---
+
+# Joining Tables
+
+- Joins are the "Cartesian product" of two tables with _conditional selection(s)_ of specific rows
+  - A Cartesian product combines all possible row values with another 
+    - An easy example is a deck of cards:
+      
+      combining four suits: 
+      {♠, ♥, ♦, ♣} 
+      
+      with thirteen ranks:
+      {A, K, Q, J, 10, 9, 8, 7, 6, 5, 4, 3, 2}
+      
+      produces 52 cards (4 * 13)
+      
+  - To create a Cartesian Product in SQL we use `CROSS JOIN` (rare, but not unheard of)
+
+---
+
+# Joining Tables
+
+- Joins require relationships (with one exception, `CROSS JOIN`) between tables
+- Different joins create different results
+  - Join names specify which conditional selection is desired
+
+---
+
+# Joining Tables
+
+- There are three join types in SQL but different joining criteria can further limit results 
+- The most permitting join is a `FULL OUTER JOIN` and the least permitting is an `INNER JOIN`
+  - Let's explore what this means by looking at each of them
+
+---
+
+# JOIN Syntax
+
+Syntax for a join is as follows:
+
+```
+SELECT [columns]
+
+FROM [left table]
+	
+JOIN [right table]
+	
+ON [left table.matching column] = [right table.matching column]
+```
+
+---
+
+# Joining Tables
+
+A couple of notes:
+
+- You will need to specify which join type is desired:
+  - e.g. `INNER JOIN`
+- Matching columns do not need to have the same name, just the same value
+  - e.g. `ON table1.LetterGrade = table2.Alphabet` will work because A=A, B=B, C=C, etc
+- You can specify more than one column to be joined
+  - e.g. `ON table1.FirstName = table2.FirstName AND table1.LastName = table2.LastName`
+
+---
+
+# INNER JOIN
+
+- `INNER JOIN` filters both tables to rows present in both tables
+- `INNER JOIN` does not produce `NULL` values
+- `INNER JOIN` is the "default" join
+  - i.e. queries do not need to specify "INNER", though it's good practice to write INNER 
+
+![bg right:50% w:500](./images/02_inner_join.png)
+
+Source: Image: Teate, Chapter 5
+
+---
+
+# INNER JOIN
+
+A quick note on table aliasing:
+- It is very common practice to alias table names 
+  - It makes join criteria much more concise
+  - It simplifies `SELECT` statements when column names are the same
+    - This is a common error: _"ambiguous column name"_
+      - SQL requires you to specify _which_ table you are returning the result from
+- Generally, tables are aliased with the first letter (or first few letters) of the table so they can be easily referenced
+  - `product AS p`
+  - `product_category AS pc`
+  
+---
+
+# INNER JOIN
+
+(`INNER JOIN` live coding)
+
+---
+
+# LEFT (OUTER) JOIN
+- `LEFT JOIN` filters the "right" table to rows present in the "left" table
+- `LEFT JOIN` will most often produce `NULL` values
+- The "OUTER" in `LEFT OUTER JOIN` is optional
+  - Generally, OUTER seems to be excluded, but both are correct
+- LEFT _is not_ optional; there is no "OUTER JOIN"
+
+![bg right:50% w:500](./images/02_left_join.png)
+
+Source: Image: Teate, Chapter 5
+
+---
+
+# LEFT (OUTER) JOIN
+
+(`LEFT JOIN` live coding)
+
+---
+
+# RIGHT (OUTER) JOIN
+- `RIGHT JOIN` filters the "left" table to rows present in the "right" table
+- `RIGHT JOIN` will most often produce `NULL` values
+- The "OUTER" in `RIGHT OUTER JOIN` is optional
+  - Generally, OUTER seems to be excluded, but both are correct
+
+![bg right:40% w:500](./images/02_right_join.png)
      
-- Goal: estimate the population proportion of a particular allele A (the other allele is a).
+Source: Image: Teate, Chapter 5
 
 ---
 
-# Estimation of Allele Frequency
+# RIGHT (OUTER) JOIN
+- `RIGHT JOIN` is somewhat frowned upon, but sometimes they make sense
+  - Often your query can be reorganized to use a `LEFT JOIN` instead
 
-- The allele proportion (frequency) in the population is the proportion of chromosomes carrying that allele.
-- Suppose we have a sample of n individuals from a population with a proportion p of A alleles.
-- We want to estimate p.
-- q = 1−p is the frequency of the other allele, a.
-
----
-
-# Estimation of Allele Frequency
-
-- $n_{AA},n_{Aa},n_{aa}$ = number of individuals with genotype AA, Aa, aa.
-- $n=n_{AA}+n_{Aa}+n_{aa}$
-- $\hat{p}=\frac{2 n_{AA}+n_{Aa}}{2n}$ 
-- $\hat{q}=1-\hat{p}$
+![bg right:40% w:500](./images/02_right_join.png)
+     
+Source: Image: Teate, Chapter 5
 
 ---
 
-# Estimation of Allele Frequency
-
-- $\hat{p}$ is an unbiased estimator of $p$ when the sample is a **random sample with equal probability sampling** (each individual in the population has the same probability of being included).
-
-- In practice, this means the probability of selection in the sample does not depend on genotype directly or indirectly through a phenotype related to genotype.
-  - E.g., some genotypes might be overrepresented if you only sample people with a disease linked to the allele.
-
-- Standard error for proportion $\sqrt{\hat{p}(1-\hat{p})/2n}$ assumes independence -- may not hold.
-  - E.g., family-based or structured populations
+# FULL (OUTER) JOIN
+- `FULL OUTER JOIN` does not filter either "left" or "right" table
+- Expect `NULL` values to be produced from a `FULL OUTER JOIN`
+- My experience has been to write `FULL OUTER JOIN` rather than `FULL JOIN` but this is personal preference
 
 ---
 
-# Visualizing the Geography of Genetic Variants
+# Filtering a FULL (OUTER) JOIN
 
-- [http://popgen.uchicago.edu/ggv/](http://popgen.uchicago.edu/ggv/)
-  
-    ![Sales Figure, w:700](./images/ggv.png) 
+- All OUTER JOIN syntax can be filtered to exclude the _matching_ criteria
+  - Often called an ANTI JOIN, i.e. what's _not_ in the other table
 
-___
-
-# Population Substructure
-
-- Different subgroups present within your population 
-
-    ![Sales Figure, w:700](./images/pca.png) 
-
----
-
-# Population Substructure
-
-## Three common types of population substructure
-
-- Population stratification
-- Population admixture
-- Population inbreeding
-
+```
+    SELECT *
+    FROM table_1
+    {LEFT | RIGHT | FULL} OUTER JOIN table_2
+    ON table_1.key = table_2.key
+    WHERE {table_1.key IS NULL | table_2.key IS NULL | 
+           table_1.key IS NULL OR table_2.key IS NULL}
+```
 
 ---
 
-# Population Stratification
+# Multiple Table Joins
+- More than one table can be joined at a time
 
-- Simplest form of population substructure.
-- Individuals in a population can be divided into disjoint strata.
-- Strata: ethnic, racial, or geographic groups.
-- Allele frequencies can vary among strata.
-    ![bg right:40% w:500](./images/pop_euro.png)
+```
+    SELECT *
+    FROM table_1
+    {INNER | LEFT | FULL JOIN table_2
+      ON table_1.key = table_2.key
+    {INNER | LEFT | FULL JOIN table_3
+      ON {table_1 | table_2}.key = table_3.key
+    {INNER | LEFT | FULL JOIN table_n
+      ON {table_1 | table_2 | table_3}.key = table_n.key
 
----
-
-# Population Admixture
-- Individuals in a population have a mixture of different genetic ancestries due to mixing of two or more populations in the past.
-- E.g., Hispanic populations:
-
-    ![Sales Figure, w:900](./images/pop_mix.png) 
-
----
-
-# Population Admixture
-
-- If allele frequency differs between these populations, then the probability that an individual carries an allele depends on the mixture of that individual’s ancestry.
-
-- If disease rates differ across populations, **spurious associations** can arise.
-
-  - E.g., Allele frequencies and the percentage with diabetes, stratified by the number of great grandparents from a hypothetical ancestral group (population X):
-
-  -   | Population X Heritage | Gm3;5;13;14% |  % Diabetes |
-      |------------|------------------------|-------|
-      | 0 |    65.8% | 18.5%   |
-      | 4 |  42.1%   | 28.6%    |
-      | 8 | 1.6%    | 39.2%   |
-  
----
-
-# Population Inbreeding 
-
-- A preference for mating among relatives, or geographic isolation, restricts mating choices.
-   ![Sales Figure, w:600](./images/pop_inbreed.png) 
+```
 
 ---
 
-# Inbreeding Coefficient
+# Multiple Table Joins
 
-- The inbreeding coefficient:
-     $F$ = probability that a random sampled individual in a population inherits two copies of the same allele from a common ancestor.
-- In large, randomly mating populations, $F=0$.
-
-![bg right:50% w:600](./images/Inbreed_family.jpg) 
-
+- The order and type of joins will have significant effect on the final table
+- It's important to determine which table should be the `FROM` table
+- Sometimes you have to experiment a bit to get things right
+- **Can you imagine scenarios based on your knowledge of different `JOIN` types that result in significantly different outputs?**
 
 ---
 
-# Population Inbreeding 
+# Multiple Table Joins
 
-- Inbreeding tends to **increase the number of homozygotes** in a population, and so inbred populations tend to a **higher‑than‑expected frequency of rare recessive disorders**. 
-
- ![bg right:50% w:500](./images/inbreed_pop2.png) 
+(Multiple Table Joins live coding)
 
 ---
 
-# Hardy-Weinberg Equilibrium (HWE)
-
-- In 1908, Hardy and Weinberg independently derived a formula relating the genotype frequencies in offspring to allele frequencies in parents.
-
-- The genotype distribution at a locus is defined by the allele frequencies.
-
-- Assumptions: random mating, no inbreeding, no selection, no mutation, no migration, infinite population size.
-
-- HWE simplifies statistical theory and is often assumed.
-
----
-
-# Hardy-Weinberg Equilibrium
-
-- Let **$p$** be **the frequency of the A allele**.
-- After one generation of random mating: 
-$𝑃(𝐴𝐴)=p^2$, $𝑃(𝐴𝑎)=2𝑝𝑞$, $𝑃(𝑎𝑎)=𝑞^2$.
-- Thus, with random mating, the number of A alleles in the offspring generation $\sim 𝐵𝑖𝑛(2,𝑝)$.
-![bg right:40% w:500](./images/hwe.jpg)
-
-
----
-
-# Testing for HWE
-- Common first step in any genetic analysis.
-- $𝐻_{0}$: HWE holds.  Vs  $𝐻_{1}$: HWE does not hold.
-- Compare the observed genotype frequencies with those expected under HWE (under $𝐻_{0}$).
-
----
-
-# Testing for HWE
-- **The Pearson Goodness of Fit Test for HWE**:
-- $𝐻_{0}$: HWE holds;  vs.  $𝐻_{1}$: HWE does not hold.
-- Given a sample size $n$ from the population:
-
-- |            | AA                     | Aa    | aa    |   |
-  |------------|------------------------|-------|-------|-------|
-  | **Observed** | $n_{AA}$               | $n_{Aa}$ | $n_{aa}$ | $n$    |
-  | **Expected** | $n\bar{p}^2$           | $2n\bar{p}\bar{q}$ | $n\bar{q}^2$ | $n$    |
-- $\bar{p}=\left(2 n_{A A}+n_{A a}\right) /(2 n).$
-- $T=\sum^{3}_{i=1} \frac{\left(O_i-E_i\right)^2}{E_i}$; $T \sim \chi^2_{(1)}$ under $H_{0}$.
-
----
-
-# Exercise
-
-- Assume you observe that the proportion of a population affected with sickle cell anemia is 0.01. Assuming an autosomal recessive disease model and HWE, estimate the frequency of the sickle cell mutation at the hemoglobin locus in this population.
-
----
-
-# Exercise
-
-- **Autosomal recessive disorder** $\rightarrow$ affected = homozygous recessive (aa)
-- Under HWE, $q^2=$ Frequency of affected individuals $=0.01$ $\rightarrow q=\sqrt{0.01}=0.1$.
-- Frequency of normal allele $(\mathrm{A})=p=1-q=0.9$
-- Genotype distribution under HWE:
-  - Homozygous normal (AA): $p^2=0.81$
-  - Heterozygous carriers (Aa): $2 p q=2 \times 0.9 \times 0.1=0.18$
-  - Homozygous sickle cell (aa): $q^2=0.01$
-
----
-
-
-# Exercise - Testing HWE
-
-- |    Genotypes        | AA                     | Aa /aA   | aa |  Total |
-  |------------|------------------------|-------|-------|-------|
-  | **Observed counts** | 189               | 89 | 9| 287  |
-  | **Expected counts** |  | | |287|
-  | **Expected freq.** |  0.81| 0.18| 0.01  | 1|
-
-- $T=\sum^{3}_{i=1} \frac{\left(O_i-E_i\right)^2}{E_i} \sim \chi^2_{(1)}$ under $H_{0}$.
-
----
-
-# Exercise - Testing HWE
-
-- |    Genotypes        | AA                     | Aa /aA   | aa |  Total |
-  |------------|------------------------|-------|-------|-------|
-  | **Observed counts** | 189               | 89 | 9| 287  |
-  | **Expected counts** |  $0.81×287 \approx 232.5$ | $0.18×287 \approx 51.7$| $0.01 \approx 287 \approx 2.9$ |287|
-  | **Expected freq.** |  0.81| 0.18| 0.01  | 1|
-
-- $T=\sum^{3}_{i=1} \frac{\left(O_i-E_i\right)^2}{E_i}= \frac{(189-232.5)^2}{232.5}+\frac{(89-51.7)^2}{51.7}+\frac{(9-2.9)^2}{2.9}=47.88$.
-- P-value = $4.53×10^{−12}$; reject HWE. 
-
----
-
-# Why does HWE fail?
-
-- Rejecting the HWE provides some evidence that HWE does not hold – **Hardy-Weinberg disequilibrium (HWD)**.
-- Many reasons for HWD: **population substructure**, **selection**, **genotyping error**, **association with trait in case-control design**.
-- At a disease locus we usually have HWD in cases: if a minor allele homozygous confers greater risk to disease, selecting individuals with disease results in more homozygous and less heterozygous than expected. 
-- With population substructure or inbreeding, heterozygous individuals tend to be underrepresented relative to HWE.
-- In GWAS we use the HWE test in controls only to identify variants which might be problematic. 
-
----
-
-# Population Structure and Genotype Distributions
-
-#### With population structure, we have variance inflation relative to HWE.
-
-- Consider a population divided into $K$ subgroups (strata).
-- Each stratum $k$ has its own allele frequency $p_{k}$ and stratum frequency $s_k$.
-- Assumes HWE holds within each stratum.
-
-- |   Stratum       | S | AA | Aa |  aa |
-  |------------|-------|-------|-------|-------|
-  | 1 | $s_{1}$ | $p_{1}$ | $p^2_{1}$| $2p_{1}q_{1}$  | $q^2_{1}$ |
-  | 2 | $s_{2}$ | $p_{2}$ | $p^2_{2}$| $2p_{2}q_{2}$  | $q^2_{2}$ |
-  | ... | ... | ... | ... | ...  | ... |
-  | K | $s_{K}$ | $p_{K}$ | $p^2_{K}$| $2p_{K}q_{K}$  | $q^2_{K}$ |
-  
-
----
-
-# Population Stratification and Genotype Distributions
-
-- Overall allele frequency in the combined sample: $p=\sum_{k=1}^K s_k p_k.$
-- Variance of allele count per individual:
-  $$\operatorname{Var}(X)=2 p q+2 \operatorname{Var}\left(p_k\right)>2 p q$$
-- Thus, with **population stratification**, var(X) is **inflated**.
-- When $var(p_{k})=0$, there is no variance inflation. 
-
----
-# Derivations
-
-- Under HWE in stratum k :
-  - Mean allele count: $\mathrm{E}[X \mid k]=2 p_k.$
-  - Variance within stratum: $\operatorname{Var}(X \mid k)=2 p_k q_k, q_k=1-p_k.$
-- Law of total variance: $\operatorname{Var}(X)=\mathrm{E}[\operatorname{Var}(X \mid k)]+\operatorname{Var}(\mathrm{E}[X \mid k]).$
-
-
-- Within-strata variation:
-$$
-\mathrm{E}[\operatorname{Var}(X \mid k)]=\sum s_k 2 p_k q_k.
-$$
-
-- Between-strata variation
-$$
-\operatorname{Var}(\mathrm{E}[X \mid k])=\operatorname{Var}\left(2 p_k\right)=4 \operatorname{Var}\left(p_k\right).
-$$
-
-- Combine: $\operatorname{Var}(X)=2 \sum s_k p_k q_k+4 \operatorname{Var}\left(p_k\right).$
----
-# Derivations
-
-- $\operatorname{Var}(X)=2 \sum s_k p_k q_k+4 \operatorname{Var}\left(p_k\right).$
-
-- $\sum_k s_k p_k q_k=\sum_k s_k p_k\left(1-p_k\right)=\sum_k s_k p_k-\sum_k s_k p_k^2=p-\mathrm{E}\left(p_k^2\right).$
-    
-    $=p-\left(\operatorname{Var}\left(p_k\right)+p^2\right)=p q-\operatorname{Var}\left(p_k\right).$
-
-- Thus, $\operatorname{Var}(X)=2 p q+2 \operatorname{Var}\left(p_k\right)$. 
-
----
-
-# Population Inbreeding and Genotype Distributions
-
-- With inbreeding there is a positive probability that an individual inherits the exact same A (or a) allele from both parents.
-- The inbreeding coefficient F = P(a randomly sampled individual inherits the same copy from both parents).
-  - With probability F, the two alleles are **identical by descent** (IBD).
-  - With probability 1−F, they are drawn independently from the gene pool (HWE frequencies).
----
-
-# Derivations
-- $P(A A) =P(X=2)=F p+(1-F) p^2$
-- $P(A a) =P(X=1)=2 p q(1-F)$
-- $P(a a) =P(X=0)=F q+(1-F) q^2$
-
-
-- $E(X)=2 p$.
-- $\operatorname{Var}(X)=4\left[F p+(1-F) p^2\right]+2 p q(1-F)-4 p^2=2 p q(1+F)$.
-- Var(X) is inflated relative to the variance under HWE!
-
----
-
-# Measuring the Departure of HWE
-- An estimate of the inbreeding coefficient is **$\hat{F}=1-O / E$**.
-
-- O is the number of heterozygotes and E is the expected number of heterozygotes based on HWE.
-
-- With inbreeding, F should be positive.
-
----
-
-# Recap
-
-- Bottlenecks and founder effects: Events that reduce genetic diversity or create isolated groups can lead to allele frequency differences between populations.
-
-- Hardy–Weinberg equilibrium (HWE): Predicts genotype frequencies under random mating; deviations can indicate factors like substructure, selection, inbreeding, or genotyping errors.
-
-- Population structure: Stratification and admixture can cause allele frequency differences between subgroups, while inbreeding increases homozygosity within subpopulations. All three factors can alter genotype proportions relative to HWE expectations.
-
----
-
-# Recap: Simple Disease Models 
-
-- $A, a$: the two alleles at a disease locus; $A$ is the risk allele.
-- If the genetic locus has no effect on disease then $P(Y=1 \mid aa)=P(Y=1 \mid A a)=P(Y=1 \mid AA)$.
-- **Dominant**: $P(Y=1 \mid AA)=P(Y=1 \mid A a)=1, P(Y=1 \mid a a)=0$.
-- **Recessive**: $P(Y=1 \mid A A)=1, P(Y=1 \mid A a)=P(Y=1 \mid a a)=0$.
-- These deterministic models **hold only rarely for simple Mendelian diseases**.
-- More realistic are stochastic models with reduced penetrance and phenocopies.
-
----
-
-# Recap: Simple Disease Models 
-
-- Reduced penetrance: the probabilities above are less than 1.
-  - e.g. in the recessive model $\mathrm{P}(\mathrm{Y}=1 \mid \mathrm{DD})<1$.
-
-- Phenocopy means probability $P(Y=1 \mid d d)>0$ 
-  - Disease can be caused by a different genetic locus than the one under consideration.
-  
-- **Additive** if the penetrance of the heterozygous genotype is midway between the two homozygous genotypes.
-
----
-
-# Recap: Genotype Coding
-
- ![Sales Figure, w:700](./images/geno_coding.png)
-
-
-
----
-# Tutorial I: Navigating the Genetic Dataset
-
-- The goal is to help beginners understand how genotype data is stored and accessed (in PLINK), and prepare them for downstream tasks like GWAS and QC.
-
-- Introduces the structure, content, and usage of PLINK binary genotype datasets, using a toy dataset with 4,000 individuals and more than 300K SNPs in PLINK. 
-
----
-
-# What's Next: Genetic Association Studies
-
-- Part 1: Given a trait, should we perform genetic studies and under what conditions?
-
-- Part 2: Association tests 
-
-
----
-
-## How do we know a trait is genetic?
-
-- Most researchers would not undertake a genetic analysis without enough evidence.
-
-- Family Studies: traits that run in families suggest genetic influence.
-    
-- **Heritability** estimates: statistical models can estimate what proportion of variance in a trait is due to genetic factors.
-    
-- Genetic association studies: identifying specific genetic variants (SNPs, genes) that are statistically associated with the trait.
-    
----
-
-# Heritability
-
-- Heritability analyses are designed to show that diseases, or phenotypes more generally, have a genetic basis.
-- Q: what proportion of the total phenotypic variation in a population can be attributed to genetic factors, as opposed to environmental or random factors?
-
-
----
-
-# Heritability
-
-![Sales Figure, w:900](./images/heritability.png) 
-
----
-
-### What questions do you have about anything from today?
+# What questions do you have about anything from today?

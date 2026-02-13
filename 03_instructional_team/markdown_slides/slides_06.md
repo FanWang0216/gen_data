@@ -1,607 +1,381 @@
 ---
 marp: true
-theme: dsi_certificates_theme
+theme: dsi-certificates-theme
+_class: invert
 paginate: true
 ---
 
-# Population Stratification & Genotype Imputation 
+# Ethics, Normalization, and Python Integration in Databases
 
 ```
 $ echo "Data Sciences Institute"
 ```
 
-----
+---
 
-# What You’ll Learn Today
 
-- **Why population structure matters:** Recognize how stratification and relatedness inflate association signals, learn core fixes (genomic control, PCA covariates, mixed models) as well as common pitfalls.
-- **Use PCs and LMMs effectively:** Apply principal components for visualization/adjustment and deploy linear mixed models to obtain calibrated tests at scale.
-- **Genotype imputation in practice:** Understand the reference-panel, LD-driven inference, quality metrics (e.g., INFO/$r^2$), and common pitfalls.
+# Beyond SQL:
 
------
+## $\rightarrow$ Ethics
 
-# Population Stratification
+## Normal Forms
 
-- Different subgroups present within your population.
+## Run SQLite in Python
 
-![Sales Figure, w:700](./images/PopS1.png) 
+---
 
------
 
-# Population Stratification
+# Ethics
 
-- Population structure leads to differences in both traits and allele frequencies across regions.
+Data Ethics issues have seen a huge increase in papers on the subject and are more and more newsworthy.
 
-  ![Sales Figure, w:750](./images/PopS8.png)
+Many of these issues involve SQL databases, but not explicitly. SQL is rarely the culprit, but instead part of a system affected by _other_ issues: a database full of credit cards is leaked, personal data is sold to a third party without consent, records are destroyed either intentionally or by accident.
 
-----
+---
 
 
-# Population Structure Acts as a Confounder
+# Ethics
+But Data Ethics are still an important part of any well-rounded SQL course. We will consider:
+- privacy and privacy policies
+- security and appropriate access to data
+- how database design affects our perception 
+- labour rights for data entry
+- bias in data entry
 
-![Sales Figure, w:400](./images/PopS2.png) 
+---
 
-- Failing to account for population stratification results in incorrect variance estimates for the association test statistic $\rightarrow$ **false positive associations**.
+# A Personal Story
 
------
+- In my first job, our most Senior Business Intelligence Analyst was involved in a motorcycle accident
+- All of us were terribly concerned:
+  - We had very little details of his status, other than he was in the ER and later ICU
+  - We knew his 8-year old son had been involved
+  - Motorcycle accidents are usually _bad_
+- We were all working for the state of Colorado's largest healthcare provider, and he ended up at one of our hospitals
+  - Being the organization's team of data analysts we had access to every patient's medical record
 
-# How to Address Population Stratification?
+---
 
-1.  **Hardy-Weinberg failure**
-    -   Not powerful, provides no adjustment.
-2.  **Modern approaches**
-    -   Use large sets of *null markers*.
-    -   Stratification causes global inflation of test statistics at
-        null markers (not disease-associated).
-    -   By examining these markers, we can estimate the extent of
-        stratification.
-    -   Enabled by GWAS: millions of markers available, most are null.
 
-----
+# A Personal Story
 
-# Approaches to Adjust for Population Stratification
+- **What are the ethical issues important to this story?** 💭💬 **Think, Pair, Share**
 
-- Genomic Control
-- Clustering approaches
-- Principal component analysis (PCA)
-- Mixed effect models
+---
 
+# A Personal Story
 
------
+- Privacy: we were legally and morally required to respect his privacy
+  - Even if our thoughts well-intentions, we did not have his consent to these details
+- Policies: his data was protected under HIPAA (PHIPA in Canada)
+- Security: the organization protected his data from as many people as possible
+  - We still had our job functions, requiring some access
+      - The organization had logging functions in place to ensure none of us looked
+  - Systems were designed to rigourously protect all patient data, including his
+- He lived, with a long road to recovery
+- His son had very few injuries and recovered quickly
+- None of us looked at any of his records
 
-# Genomic Control (GC)
+---
 
-- WE define GC lambda as
-$$
-\lambda=\frac{\operatorname{median}\left(\chi_1^2, \ldots, \chi_L^2\right)}{0.4549}
-$$
 
-  - If $\lambda>1.05 \rightarrow$ population stratification likely
-  - Corrected test statistic:
+# Pakistani Computerized National ID Card
 
-$$
-\chi_{l, G C}^2=\frac{\chi_l^2}{\lambda}, \quad \forall l=1, \ldots, L.
-$$
+- Read: Qadri, R. (2021, November 11). _When Databases Get to Define Family._  Wired.
 
------
+  https://www.wired.com/story/pakistan-digital-database-family-design/
 
-# Key Principles of Genomic Control
 
-- Most SNPs are expected not associated with the trait.
-- If many SNPs show inflated test statistics $\rightarrow$ evidence of stratification.
-- Compare **observed median $\mathbf{X}^2$** to 0.4549 (expected under the null).
-- Ratio measures inflation due to stratification.
-- Stratification should affect all loci equally $\rightarrow$ similar inflation across SNPs.
-- Adjust each statistic by rescaling with GC $\lambda$.
-- Genomic control uses **a constant adjustment factor for all SNPs**.
-- Can lead to overadjustment at some SNPs and underadjustment at other SNPs.
+---
 
-------
 
-# STRUCTURE 
+# Pakistani Computerized National ID Card
 
-- Bayesian clustering model (Pritchard, Stephens, Donnelly, Genetics 2000) **infer the latent population structure** by a stratified analysis.
-- Assigns individuals to $K$ source populations; under admixture, each individual can have **fractional ancestry** across populations.
-- Works best with **strong population structure** (a few distinct ancestries) and **many variants / ancestry-informative markers (AIMs)**.
+- **What values systems are embedded in databases and data systems you encounter in your day-to-day life?**
 
-- A practical issue is choosing $K$ in advance.
+---
 
-  - Larger $K$ can overfit, so model-selection/diagnostic procedures are needed.
+# Pakistani Computerized National ID Card
 
-  - Often used exploratorily by comparing results across several values of $K$.
+- Fairness: Our expectations of what is "normal" can inform software and database design 
+  - Many studies show that lack of diversity in tech creates a narrow viewpoint
+      - Design choices can reinforce harmful stereotypes, be exclusionary, further marginalize people
+      - Shifting norms...?
+- Inequality: Data and data systems are representation of history, but influence the present and the future 
+  - This effect is compounded when we add automation to these data systems
+      - These systems often claim to address bias and inequity, but are better at disguising it
+      - Allow us to escape the difficulties of making decision about actual people
+  - What gets counted? Who gets counted?
 
------
+---
 
-# STRUCTURE
+# It's All People
 
-##### Convergence of Structure: Taita thrush data (K=3).
-    
-![bg right:50% w:500](./images/structure.png) 
+- Read: Boykis, V. (2019, October 16). _Neural nets are just people all the way down._ Normcore Tech. <br>
 
-- The ternary plot shows each individual’s proportional ancestry.
+  https://vicki.substack.com/p/neural-nets-are-just-people-all-the
 
-- Points near a vertex indicate near-pure membership in one cluster; interior points indicate admixture.
 
+---
 
------
 
-# STRUCTURE Bar Plots
+# It's All People
 
-![bg right:50% w:600](./images/structure2.png) 
+- **What are the ethical issues important to this story?**
 
-- Each vertical bar = one individual; the color fractions are the estimated membership coefficients.
-- Individuals with same color patterns are inferred to belong to the same cluster.
+---
 
-----
+# It's All People
 
-# Applying STRUCTURE to Admixed Populations
+- Labour: like Machine Learning, SQL databases are built on a foundation human labour
+  - Much of this labour is invisible
+      - I was aware that much of the health data I used was produced by "coders", but generally only thought about these people when there were mistakes
+- Bias: Humans make choices, labels, determinations before a neural network ever exists
+  - Humans can create bias and are subject to certain pre-conceptions (i.e. purposes for labelling) that will create different outcomes
+      - Biases have to be addressed/moderated...more human labour!
 
-![Sales Figure, w:1000](./images/struc_admix.png)
+---
 
 
------
+# Beyond SQL:
 
-# Principal Component Analysis 
-(**Eigenstrat**, Nature Genetics 2006)
+## Ethics
 
-- Widely used approach to control for population structure in genetic association studies.
-- Intuition: ancestry/geography leaves correlated patterns in genotypes that can be summarized by a few axes.
-- Start with a genotype matrix $X \in \mathbb{R}^{n \times m}$ ( $n$ individuals, $m$ SNPs); aim for a low-dimensional summary with $k \ll m$.
+## $\rightarrow$ Normal Forms
 
-----
+## Run SQLite in Python
 
-# What PCA Does
+---
 
-- Principal component analysis (PCA) is a statistical procedure that allows us to perform **dimension reduction**.
-  - Finds orthogonal directions (“principal components”) that capture the **largest possible variance** in the data.
-  ![bg right:50% w:600](./images/pca1.png)
-----
 
+## Purpose
 
-# Geometric Picture
+- Databases often become more useful if they are _normalized_
+  - When a table is normalized, it splits complex data stored in single columns and stores them instead in many smaller tables 
+  - Our farmersmarket.db is normalized
 
-- Identify a pair of orthogonal vectors (red) that define a lower-dimensional plane (gray) and **maximize the variance of the projection**.
-  ![bg right:50% w:650](./images/pca2.png)
+- When a collection of databases is normalized we call this a data warehouse 
+- There's a fine balance between the number of tables created and what is stored in any single table
+  - The degree of normalization is based on criteria defined by "forms" 
+  - e.g. our product table could be further normalized:
+      - we could place product_qty_type into its own table and reference it with an id.
 
-----
+---
 
-# Formal Objective
 
-- Given $X=\left[x_1, \ldots, x_n\right]^{\top}$, find a $k$-dimensional subspace minimizing the mean squared reconstruction error (equivalently, maximizing captured variance).
-- Two equivalent views:
-  - Maximize variance along chosen directions.
-  - Minimize residuals from projecting onto the subspace.
-  
-    ![Sales Figure, w:500](./images/pca3.png)
+## First Normal Form
 
-------
+- First Normal Form (1NF) requires that each column contain one single value
+- Many tables are in 1NF by default
 
-# Optimization Formulation
+---
 
-$$
-\min _{W, C}\left\|X-W C^{\top}\right\|_F \quad \text { s.t. } C^{\top} C=I_k
-$$
+Consider a non-normalized table: 
 
-- Shapes: $W \in \mathbb{R}^{n \times k}$ (scores), $C \in \mathbb{R}^{m \times k}$ (loadings).
-- Many solvers exist; a standard route is via **eigendecomposition/SVD** of a covariance matrix.
+| name   | OS  | software                 | supervisor      |
+|--------|-----|--------------------------|-----------------|
+| A      | win | VSCode, MSSQL, RStudio   | Eric Yu         |
+| Thomas | mac | Spyder, SQLite, RStudio  | Rohan Alexander |
 
-------
+---
 
-# Practical Algorithm
+We can shift it into 1NF by unpivoting the software column:
 
-1. Center the data (i.e., each SNP): column means of $X$ are set to zero.
-2. Compute the covariance matrix of the data: $S=X^{\top} X$.
-3. Take the top $k$ eigenvectors of the covariance matrix that have the largest eigenvalues $\rightarrow$ the top $k$ principal component.
-4. Low-rank reconstruction: $X \approx W C^{\top}$.
+| name   | OS  | software | supervisor      |
+|--------|-----|----------|-----------------|
+| A      | win | VSCode   | Eric Yu         |
+| A      | win | MSSQL    | Eric Yu         |
+| A      | win | RStudio  | Eric Yu         |
+| Thomas | mac | Spyder   | Rohan Alexander |
+| Thomas | mac | SQLite   | Rohan Alexander |
+| Thomas | mac | RStudio  | Rohan Alexander |
 
------
+(SQLite doesn't support `UNPIVOT`, so we'll use `SUBSTR` and `UNION` to create this)
 
-# Lower-Dimensional Representation
+---
 
-  ![Sales Figure, w:1200](./images/pca4.png)
-  
-------
 
-# How Many PCs?
+## Second Normal Form
 
-- Goal: use the fewest PCs that retain the relevant structure while avoiding noise/overfit.
-- For data visualization, only a few are needed.
-- To adjustment for stratification, the right number is data-dependent.
-- Inspect explained variance / scree plot and add PCs until major structure is captured.
-  ![bg right:50% w:600](./images/pca5.png)
+- Second Normal Form (2NF) requires that each non-key column is dependent on the primary key
+  - Therefore, no row deletions can affect the integrity of another table
+- Our farmersmarket.db is 2NF!
 
------
+---
 
-# How can we use PCA?
+Our table is currently 1NF, which is required for 2NF:
 
-- Data Visualization: Project samples onto the leading PCs (e.g., PC1–PC2) and plot them to reveal clusters and gradients.
+| name   | OS  | software | supervisor      |
+|--------|-----|----------|-----------------|
+| A      | win | VSCode   | Eric Yu         |
+| A      | win | MSSQL    | Eric Yu         |
+| A      | win | RStudio  | Eric Yu         |
+| Thomas | mac | Spyder   | Rohan Alexander |
+| Thomas | mac | SQLite   | Rohan Alexander |
+| Thomas | mac | RStudio  | Rohan Alexander |
 
-- Adjustment for confounding: Include the top PCs as covariates to control for population stratification in association analyses.
+---
 
-- 1000 Genomes PCA example: http://bwlewis.github.io/1000_genomes_examples/PCA_overview.html
 
------
+# Second Normal Form
 
-![Sales Figure, w:800](./images/pca6.png)
+2NF requires that we prevent supervisors from being deleted, should A or myself leave the school. 
 
+Supervisors now becomes its own table:
 
+| id | name            |
+|----|-----------------|
+| 1  | Eric Yu         |
+| 2  | Rohan Alexander |
 
-------
+---
 
-# Correcting Stratification with Principal Components
 
-- PC adjustment reduces inflation.
+# Second Normal Form
 
-- Diminishing returns: Most correction occurs by ~10–20 PCs (or significant PCs).
+We introduce a PK id and supervisor_id becomes our FK, replacing supervisor:
 
-- Trait-specific effect: Height shows the strongest inflation and benefits most from PC adjustment.
+| id | name   | OS  | supervisor_id |
+|----|--------|-----|---------------|
+| 1  | A      | win | 1             |
+| 2  | Thomas | mac | 2             |
 
-![bg right:50% w:700](./images/pca8.png)
+---
 
+...and student_software now references that PK:
 
--------
+| id | software |
+|----|----------|
+| 1  | VSCode   |
+| 1  | MSSQL    |
+| 1  | RStudio  |
+| 2  | Spyder   |
+| 2  | SQLite   |
+| 2  | RStudio  |
 
-# Mixed Effect Models
 
-- Mixed effect models can model population structure, family structure and cryptic relatedness.
-- Model phenotypes using a mixture of fixed effects (SNPs) and random effects (family structure).
-- An early approach EMMAX (Nature Genetics, 2010) is based on the mixed-effects model to account for hidden relatedness.
-- Many other methods (BOLT-LMM, fastGWAS, SAIGE, REGENIE) have been proposed to improve the computational efficiency of these methods.
+---
 
-----
+# Third Normal Form
 
-# Linear Mixed Models (LMM) - Review
-- **Ordinary linear model**:$Y=X \beta+C \alpha+\varepsilon$
+- Third Normal Form (3NF) requires that we replace any non-key transitive functional dependency 
+  - This means if any non-key column's value changed, and therefore another non-key value would be invalidated, we must replace this dependency with a table relationship instead
 
-- **Mixed linear model**:$Y=X \beta+C \alpha+u+\varepsilon$
-  - $u$ : genetic (heritable) random effect. $E(u)=0, \operatorname{Var}(u)=\sigma_g^2 K$.
-  - $\varepsilon$ : residual, non-genetic noise. $\operatorname{Var}(\varepsilon)=\sigma_e^2 I$.
-- **Genetic relationship matrix (GRM):** $K = \frac{G G^T}{M}$,
-  where $G=$ genotype matrix ( $N \times M$ ), $N=$ \#individuals, $M=$\# SNPs (both large in GWAS).
+---
 
-------
+Our table is currently 2NF, which is required for 3NF:
 
-# Linear Mixed effect Models (LMM) - Review
+| id | name   | OS  | supervisor_id |
+|----|--------|-----|---------------|
+| 1  | A      | win | 1             |
+| 2  | Thomas | mac | 2             |
 
 
-- $K$ captures all kinds of relatedness:population stratification, family structure and hidden/cryptic relatedness.
-- $\sigma_g^2$ : genetic variance that we want to estimate.
-  - Estimation methods: REML or AI-REML.
-- From the model, we can also derive estimates of random effects $(u)$.
+---
 
--------
+# Third Normal Form
 
-# Association Testing with LMM (Step 1)
+Because MSSQL is only available on Windows, any change in OS will change whether MSSQL can be installed
 
-**Step 1: Fit the null model**
+OS must become its own table:
 
-$$
-Y=C \alpha+u+\varepsilon
-$$
+| OS_id | OS   | win_only |
+|-------|------|----------|
+| 1     | win  | TRUE     |
+| 2     | mac  | FALSE    |
 
-- Remove covariate effects:
+---
 
-$$
-\tilde{Y}=u+\varepsilon
-$$
+...and we must create a software table referencing it
 
-- Using REML/AI-REML we estimate $\sigma_g^2$ and $\sigma_e^2$.
-- Can also obtain **BLUPs** (best linear unbiased predictors) of $u$:
-$$
-\hat{u}=\mathrm{K} \widehat{\sigma_g^2} \times \Sigma^{-1}\left(\mathrm{I}-\mathrm{C}\left(C^T \Sigma^{-1} \mathrm{C}\right)^{-1} C^T \Sigma^{-1}\right) \mathrm{Y}
-$$
+| software_id | software | win_only | 
+|-------------|----------|----------|
+| 1           | MSSQL    | TRUE     |
+| 2           | RStudio  | FALSE    |
+| 3           | VSCode   | FALSE    |
+| 4           | SQLite   | FALSE    | 
+| 5           | Spyder   | FALSE    |
 
-  - $\Sigma=\widehat{\sigma_g^2} \mathrm{~K}+\widehat{\sigma_e^2} \mathrm{I}$.
+---
 
+# Third Normal Form
 
-------
+At last, we have 3NF, for both our student_software table:
 
-# Association Testing with LMM (Step 2)
+| id | OS_id | software_id |
+|----|-------|-------------|
+| 1  | 1     | 1           |
+| 1  | 1     | 2           |
+| 1  | 1     | 3           | 
+| 2  | 2     | 2           |
+| 2  | 2     | 4           | 
+| 2  | 2     | 5           |
 
-**Step 2: Test SNP effects**
-- Hypothesis: $H_0$ : $\beta=0$
-- Residual phenotype after removing random effect:
 
-$$
-Y_{\text {resid }}^*=\tilde{Y}-\hat{u}
-$$
+---
 
-- Fit a standard linear regression:
+...and our original table:
 
-$$
-Y_{\text {resid }}^*=X \beta+\varepsilon
-$$
+| id | name   | OS_id | supervisor_id |
+|----|--------|-------|---------------|
+| 1  | A      | 1     | 1             |
+| 2  | Thomas | 2     | 2             |
 
-- **Computational aspects**:
-- Step 1 is expensive (matrix inversions, large-scale operations) but done only once.
-- Step 2 is repeated across millions of SNPs (efficient).
+---
 
 
---------
+# Normal Forms
 
-# PCA VS. Mixed Model
+(Normal Forms live coding, putting the previous example into action!)
 
+---
 
-  ![Sales Figure, w:850](./images/pca9.png) 
+### What questions do you have about normal forms?
 
-<!-- 
-- Population structure causes inflated associations if uncorrected.
+---
 
-- PCA helps, but is not perfect (especially in large datasets or with subtle relatedness).
+# Beyond SQL:
 
-- Linear mixed models (EMMAX) provide the most robust correction for height, keeping the distribution close to null while retaining power for true associations.
--->
-------
+## Ethics
 
-# Q–Q plot as a Diagnostic Tool
+## Normal Forms
 
-- Order SNPs according to their p-values.
+## $\rightarrow$ Run SQLite in Python
+---
 
-- Compare the distribution of observed vs. expected test statistics or p-values under the null hypothesis.
 
-- Deviations from the diagonal line indicate potential population stratification or true associations.
-   ![Sales Figure, w:700](./images/PopS5.png) 
+# Run SQLite in Python
 
-------
+- We have seen how to connect a SQLite database to python and interact with tables
+- **...but did you know you can also run SQLite queries on python dataframe objects?**
+- Unsure of whether to write a pythonic SQL statement or connect to a SQL database in python?
+    - As always with data, there is no prescribed way of doing something!
+        
+---
 
-# Is population stratification fully resolved?
+# Python Example
 
-- The answer is no — existing correction methods may fail or be insufficient in some scenarios.
 
-- Good epidemiological study design is still the most important way to avoid confounding.
+```{python}
+import pandas as pd
+import pandasql as sql #this allows us to run SQLite queries!
 
-- Relying on convenience controls can introduce substantial bias.
+p = "https://raw.githubusercontent.com/allisonhorst/palmerpenguins/master/inst/extdata/penguins.csv"
+penguins = pd.read_csv(p) #create a dataframe
+yrly_penguins = sql.sqldf('''SELECT DISTINCT year, COUNT(*) AS count, 
+                          SUM(COUNT(*)) OVER (ORDER BY year) AS running_total
+                          FROM penguins
+                          GROUP BY year''') #run a SQLite query with sqldf()
+```
 
-- Family-based designs are gaining renewed interest due to their robustness to population stratification.
 
--------
+| year | count | running_total |
+|------|-------|---------------|
+| 2007 | 110   | 110           |
+| 2008 | 114   | 224           |
+| 2009 | 120   | 344           |
 
-# Genotype Imputation
+---
 
-- Missing data in genotypes can arise in two ways:
-   - The genotype matrix contains missing values, similar to classical missing data.
-   - Genotyping arrays only assay a subset of SNPs, leaving many unmeasured.
-     - E.g. A genotyping platform may capture ~500K SNPs, while tens of millions of common SNPs exist across the genome. For association studies, we are often interested in testing many more of these. 
 
-- Question: **Can we statistically recover (“impute”) these untyped SNPs?**
-
-
------
-
-# Genotype Imputation
-Genotype data with missing data at untyped SNPs (grey question marks)
-
-| 1 | ? | 1 | ? | 1 | ? | 0 | 2 | 2 | ? | 2 | ? | 0 |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 0 | ? | 2 | ? | 2 | ? | 0 | 2 | 2 | ? | 2 | ? | 0 |
-| 1 | ? | 2 | ? | 2 | ? | 0 | 2 | 1 | ? | 2 | ? | 0 |
-| 1 | ? | 2 | ? | 1 | ? | 1 | 2 | 2 | ? | 2 | ? | 0 |
-| 2 | ? | 2 | ? | 2 | ? | 1 | 2 | 1 | ? | 2 | ? | 0 |
-| 1 | ? | 1 | ? | 1 | ? | 1 | 2 | 2 | ? | 2 | ? | 0 |
-| 1 | ? | 2 | ? | 2 | ? | 0 | 2 | 1 | ? | 2 | ? | 1 |
-
-------
-
-# UK Biobank Imputation
-
-- UK Biobank released data on $\sim 500,000$ individuals, including genotypes and thousands of phenotypes.
-- Each sample was initially genotyped with $<1$ million SNPs.
-- Using haplotype reference panels, imputation expanded this to $\sim 80$ million variants.
-- The resulting dataset is massive: $\sim 2$ TB of imputed genetic information.
-
-----
-
-# Leveraging LD for Imputation
-
-- Correlations among SNPs, known as linkage disequilibrium (LD), allow us to infer untyped variants from observed ones.
-  ![Sales Figure, w:600](./images/LD_imputation.png) 
-
------
-
-# Principles of Imputation
-
-- Imputation methods infer genotypes at untyped sites using patterns from reference panels.
-- Often described as **in-silico genotyping.**
-- Widely applied in GWAS for:
-   - Increasing statistical power.
-   - Enabling meta-analysis by harmonizing across studies.
-
------
-
-# Reference Panels
-
-- In GWAS, we typically start with ~500K genotyped SNPs.
-- To impute additional SNPs, we require a **reference dataset** containing observed genotypes at those untyped sites.
-- Examples of reference resources: HapMap, 1000 Genomes, UK Biobank, TOPMed.
-- **Haplotypes:** each individual genotype can be decomposed into two haplotypes, inherited from each parent.
-
-
------
-
-# Matching Haplotypes
-
-- The reference panel must be sufficiently large and diverse to include a comprehensive set of haplotypes, enabling reconstruction of any individual in the population.
-  ![Sales Figure, w:700](./images/impute1.png) 
-
------
-
-# Inferring Missing Genotypes
-
-- Once suitable haplotypes are identified, missing alleles can be filled in.
-- The imputed genotype data is a probabilistic reconstruction, guided by LD and haplotype structure.
-  ![Sales Figure, w:700](./images/impute2.png) 
-
------
-
-# Imputation Workflow
-
-  ![Sales Figure, w:750](./images/impute_workflow.png)
-
-
-------
-
-# How Imputation Works
-
-- Starting point: a reference set of haplotypes.
-- Using the linkage disequilibrium (LD) structure in a reference population, together with the LD among observed SNPs in a dataset, we can impute the alleles of an untyped (hidden) SNP.
-- Critical assumption: reference samples and study participants come from the same (or very similar) population.
-- If mismatched, imputation accuracy declines significantly.
-
-
------
-
-# Reference Panel Resources and Limitations
-- 1000 Genomes Project: ~7.7M SNPs.
-- Haplotype Reference Consortium (HRC): 64,976 haplotypes, $>39$ M SNPs (minor allele count $\geq 5$ ).
-- TOPMed Reference Panel: ~97K deeply sequenced genomes, >300M variants.
-- Imputation accuracy depends on:
-  - Reference panel size. Small panels can overfit and yield unstable imputations.
-  - Population match. The study cohort should resemble the reference.
-- Whole-genome sequencing (WGS) data with large sample sizes are very useful as reference datasets for imputation, especially for low-frequency variants.
-
------
-
-# Imputation Model
-
-- Think of an individual's genotype as a mosaic of two haplotypes drawn from a reference set - this is what enables imputation.
-- Let $H$ be the reference haplotypes and $G_i$ the genotype vector for individual $i$.
-- Model the likelihood by summing over latent haplotype pairs $Z$ :
-
-$$
-P\left(G_i \mid H, \theta, \rho\right)=\sum_Z P\left(G_i \mid Z, \theta\right) P(Z \mid H, \rho)
-$$
-
-- Each $Z$ is a pair of haplotype sequences assembled from the reference, allowing for recombination ( $\rho$ ).
-- Include a small mutation rate $(\theta)$ so $Z$ can generate $G$.
-
-----
-
-# Imputation Model
-
-- Goal: given $\theta, \rho$, and $H$, evaluate $P\left(G_i \mid H, \theta, \rho\right)$ for each individual.
-- This is computationally heavy and is typically implemented with Hidden Markov Models (HMMs).
-- Common software: IMPUTE, MACH, BEAGLE.
-- The Michigan Imputation Server: https://imputationserver.sph.umich.edu/index.html.
-
-----
-
-# Minor Allele Frequency (MAF) Effect
-
-- Common SNPs are imputed more accurately than rare SNPs.
-  ![bg right:50% w:700](./images/impute_maf.png)
------
-
-# Using Imputed Genotypes
-
-- Accuracy matters $\rightarrow$ **Poor imputation** can create **false positives**.
-- SNPs flagged as associated are often **regenotyped*** for confirmation.
-- Imputation yields probabilities for the three genotypes; use them in downstream association analyses.
-  - For each SNP and each individual: $P(A A), P(A a), P(a a).$
-
------
-
-# Example
-
-
-  | SNP | $p_0$ | $p_1$ | $p_2$ | AF1 |
-  | :--- | :--- | :--- | :--- | :--- |
-  | 1 | 0.85 | 0.14 | 0.01 | 0.35 |
-  | 2 | 0.01 | 0.98 | 0.01 | 0.44 |
-  | 3 | 0.96 | 0.039 | 0.001 | 0.02 |
-  | 4 | 0.87 | 0.11 | 0.02 | 0.04 |
-
-- In the example, SNPs shows high confidence in the imputed genotype.
-
-----
-
-# Choices for Association Analyses
-
-1. **Multiple imputations** (draws from genotype posteriors).
-2. **Best-guess genotype**: $\arg \max \{P(A A), P(A a), P(a a)\}$.
-3. **Expected allele count (dosage)**: $E$ [alleles] $=2 P(A A)+P(A a)$.
-
-- Quality metric: $r^2$ between best-guess genotype (or true genotype when masked) and the expected allele count.
-
-- Validation approach: hide some SNP genotypes, run imputation, and compare the predictions to the masked truth.
-
-- Filter low-quality sites, e.g., exclude SNPs with $r^2<0.9$ (threshold can vary by study).
-
------
-
-# Information Measure After Imputation
-
-- How much information did imputation add for SNP $l$ ?
-
-$$
-\mathrm{INFO}_l=1-\frac{1}{n} \sum_{i=1}^n \frac{v_{i l}}{w_l}
-$$
-
-where $v_{i l}=\mathbb{E}\left(x_{i l}^2 \mid p_i\right)-\left[\mathbb{E}\left(x_{i l} \mid p_i\right)\right]^2$ is the variance of the imputed genotype for person $i$, and $w_l=2 f_l\left(1-f_l\right)$ is the expected variance under HWE (allele frequency $f_l$).
-- Interpretation:
-  - INFO = 1: complete certainty in imputation (one of the p's is 1).
-  - INFO = 0: no gain beyond what we could have imputed using only allele frequency.
-
-
--------
-
-# Imputation Portals 
-
-- Michigan Imputation Server: https://imputationserver.sph.umich.edu/index.html#!:
-  - upload GWAS genotypes (VCF/PLINK), select a reference panel, receive phased + imputed data.
-- TOPMed Imputation Server: https://imputation.biodatacatalyst.nhlbi.nih.gov/#!
- 
-
-
--------
-
-# Imputation Portals 
-
-  ![Sales Figure, w:900](./images/imputeserver.png)
-  
---------
-
-# Application
-
-- Imputed vs. array SNPs: Imputation adds dense coverage across the region, beyond the 500k array.
-- Stronger signal: The top association reaches $P \approx 1 \times 10^{-8}$, clearer than with typed SNPs alone.
-  ![bg right:50% w:600](./images/impute_gwas2.png)
-
-
-
-----------
-
-# Application 
-
-- Imputed variants densely tile the region and highlight signals missed by the 60k typed set.
-- Imputed dosages separate well by true genotypes (AA/AC/CC), indicating high accuracy.
- ![bg right:50% w:600](./images/impute_gwas.png)
-
-
-----------
-
-# Take-Home Point
-
-- Imputation reliably recovers common variants because they sit on long-range linkage disequilibrium (LD) patterns that are well represented in current reference panels. 
-
-- For low-frequency and rare alleles, accuracy drops sharply as MAF decreases-posterior dosage $r^2$ / INFO deteriorates
-   - Such alleles are sparsely observed, have weaker LD tags, and are often population-specific.
-   
-- Extending the same reliability to rare variants requires larger, ancestry-representative WGS panels, improved phasing, and ancestry-aware algorithms, with stringent quality control and experimental confirmation of key findings.
-
-------
-
-# What's Next
-
-- Quality Control
-- GWAS Tutorial
-- Linkage and Association
-- Post-GWAS Analyses
-
-## What questions do you have about anything from today?
-
-
-
-
-
-
-
+# What questions do you have about anything from today?

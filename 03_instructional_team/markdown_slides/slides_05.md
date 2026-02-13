@@ -1,575 +1,474 @@
 ---
 marp: true
-theme: dsi_certificates_theme
+theme: dsi-certificates-theme
+_class: invert
 paginate: true
 ---
 
-# Association testing II
+# Advanced SQL Techniques: Manipulation, Integration, and Optimization
 
 ```
 $ echo "Data Sciences Institute"
 ```
 
-----
+---
 
-# What You’ll Learn Today
+# Expanding your Database:
 
-- **Modeling association with population structure:** 
-  - When and how to use linear mixed models to handle relatedness and population structure.
-- **Discoveries at scale:** 
-  - How to control error rates across millions of tests (Bonferroni genome-wide threshold, FDR). 
-- **Combine evidence across studies:** 
-  - GWAS meta-analysis (combine $p$-values or effect sizes; fixed vs. random effects) 
-  - how to interpret heterogeneity.
+## $\rightarrow$ INSERT, UPDATE, DELETE
+
+## Views
+
+## Importing and Exporting Data
+
+## CROSS & Self Joins
+
+
 
 ---
 
-# Regression Approach
 
-- Generalized linear models (GLMs)
-$$
-g(E(Y \mid X))=X \beta+C \alpha+\varepsilon,
-$$
-  - $g$ is the link function.
-  - $X$ : the coded genotype
-  - $C$ : covariates (age, gender, PCs )
+# INSERT, UPDATE, DELETE
+
+Prior to this, we've focused solely on retrieving values from tables:
+- Tables can also be manipulated with `INSERT`, `UPDATE`, and/or `DELETE`
+- _A word of warning...these commands are challening to undo and can be PERMANENT_ 😱
+  - Generally, follow a policy that avoids altering data 
+  - Make backups of tables before you run a query
+  - Never hurts to test on a temporary table first!
   
-- Test for genetic effect
-
-$$
-H_0: \beta=0
-$$
-
-- Can use likelihood ratio tests or score tests to test $H_0$
-- Main advantage: it allows incorporation of covariates
-
-----
-
-# Mixed Effect models
-
-- Handle population structure, family relatedness, and cryptic correlations
-- Particularly useful when measurements are made on clusters or related individuals (family).
-- Model phenotypes using a mixture of fixed effects (SNPs, covariates) and random effects (family structure).
-
----
-# Linear Mixed Models (LMM)
-- Basic linear model: $Y=X \beta+C \alpha+\varepsilon$
-
-- Mixed model extension: $Y=X \beta+C \alpha+u+\varepsilon$
-
-  - $u$ : genetic random effects (heritability component)
-  - $\varepsilon$ : residual, non-heritable variation
-- Assumptions on random effects: $E(u)=0, \quad \operatorname{Var}(u)=\sigma_g^2 K.$
-
-- Genetic covariance matrix: $K=\frac{G G^T}{M}$
-  - $G: N \times M$ genotype matrix; $N$ : number of individuals; $M$ : number of SNPs.
-- In GWAS, both $N$ and $M$ are very large $\rightarrow$ requires efficient methods
----
-
-# Linear Mixed Models (LMM)
-
-- $K$ captures genetic relatedness, including population structure, family relationships, and hidden relatedness
-- $\sigma_g^2$:genetic variance parameter we aim to estimate
-- Estimation methods: REML (Restricted Maximum Likelihood) or AI-REML (Average Information REML)
-- LMMs also allow us to estimate the individual random effects($\mu$)
-
+- But they are useful, and sometimes the correct solution
+- There is no `SELECT` statement for these types of queries
 
 ---
 
-# Association testing in the LMM framework
-
-Two-step fitting procedure for LMM:
-
-- STEP 1: fit the null model.
-$$
-Y=C \alpha+u+\varepsilon
-$$
-
-  - We can regress out the effects of covariates:
-
-$$
-\tilde{Y}=u+\varepsilon
-$$
+# INSERT
+- `INSERT` allows you to add a record
+- Specify where you want to add:
+  - `INSERT INTO [some_table_name]`
+- ...and what you want to add:
+  - `VALUES(column_one_value, column_two_value)`
+- `VALUES` come in the order of the columns within the tables
+- `VALUES` must respect table constraints
+  - e.g. NULLs, UNIQUE, data types, etc
+- `INSERT` can help create small helper tables
+  - **Can we think of any scenarios?**
 
 ---
 
-# Association testing in the LMM framework
-  - $E(u)=0, \operatorname{Var}(u)=\sigma_g^2 K, \operatorname{Var}(\varepsilon)=\sigma_e^2 I$
-  - Using REML/AI-REML we can estimate $\widehat{\sigma_g^2}$ and $\widehat{\sigma_e^2}$.
-  - We can also get BLUP (best linear unbiased predictors)
-
-$$
-\widehat{u}=\widehat{\mathrm{K}} \widehat{\sigma_g^2} \times \Sigma^{-1}\left(\mathrm{I}-\mathrm{C}\left(C^T \Sigma^{-1} \mathrm{C}\right)^{-1} C^T \Sigma^{-1}\right) \mathrm{Y}, \Sigma=\widehat{\sigma_g^2} \mathrm{~K}+\widehat{\sigma_e^2} \mathrm{I}.
-$$
-
-
-----
-
-# Association testing in the LMM framework
-
-- STEP 2: test for association with each SNP $H_0: \beta=0$.
-
-$$
-\widehat{\boldsymbol{Y}}_{\text {resid }}^{\star}=\widetilde{\boldsymbol{Y}}-\widehat{u} .
-$$
-
-- Test for association in a linear (non-mixed) regression model
-
-$$
-\widehat{\boldsymbol{Y}}_{\text {resid }}^{\star}=X \beta+\varepsilon
-$$
-
-- STEP 1 is computationally demanding (large matrix operations like inversions), but it only needs to be done once under the null
-
-- STEP 2 is then repeated for millions of SNPs
-
-----
-
-
-# Efficient LMM Methods for GWAS
-
-- BOLT-LMM (Nature genetics, 2015)
-  - Software: https://alkesgroup.broadinstitute.org/BOLT-LMM/BOLTLMMmanual.html
-- fastGWA (Nature genetics, 2019) - assumes a sparse GRM
-  - Software: https://yanglab.westlake.edu.cn/software/gcta/\#Overview
-- SAIGE (Nature genetics, 2018)
-  - Software: https://github.com/weizhouUMICH/SAIGE
-- Regenie (Nature genetics, 2021)
-  - Software: https://rgcgithub.github.io/regenie/
-
-
----
-
-# Heritability Estimation from GWAS
-
-- Variance decomposition: $Var(Y) = Var(G) + Var(\varepsilon)$
-
-- **Heritability:**$h^2 = \frac{Var(G)}{Var(Y)}$
-
-- Earlier: used **trait covariance among relatives** (no genotypes)  
-- Now: estimate heritability directly from **GWAS data**  
-- Focus on **SNP heritability** → proportion of variance explained by common SNPs
+# UPDATE
+- `UPDATE` allows you to change a record
+- Specify where you are making your change:
+  - `UPDATE [some_table_name]`
+- ...and what you want to change:
+  - `SET column_one = value1, column_two = value2`
+- _SPECIFY A_ `WHERE` _CONDITION_
+  - `WHERE condition`
+- You can change a single column, a few columns, all the columns, etc
+  - (Respecting table constraints)
+- **What happens if you don't specify a WHERE condition?**
 
 ---
 
 
-# Heritability Estimation from GWAS
+# DELETE
+- `DELETE` allows you to remove a record
+- Specify where you want to delete:
+  - `DELETE FROM [some_table_name]`
+- _SPECIFY A_ `WHERE` _CONDITION_
+  - `WHERE condition`
+- **What happens if you don't specify a WHERE condition?!?**
+- `DELETE` doesn't _remove_ a table from a database
+  - Instead it removes the data from it, leaving the table structure and constraints in place
+      - `DROP TABLE` instead if you want to remove it altogether
 
-$$
-Y=\mu+\sum_{m=1}^M a_m X_m+\epsilon
-$$
-
-- If causal variants (QTLs) were known, genetic variance could be computed as:  
-
-$$
-\sigma_g^2=\operatorname{Var}(G)=\sum_{m=1}^M \operatorname{Var}\left(a_m X_m\right)=\sum_{m=1}^M a_m^2 2 p_m\left(1-p_m\right) .
-$$
-
-- Problem: **causal variants are unknown**  
-- Workaround: use significant SNPs as proxies for causal variants  
-- Pitfalls: may include too few (if the selection is too strict) or too many (If the selection is too lenient).
+---
 
 
-----
+# INSERT, UPDATE, DELETE
 
-# Heritability Estimation from GWAS
+(`INSERT`, `UPDATE`, `DELETE` live coding with a TEMP TABLE)
 
-- $\operatorname{cov}\left(y_j, y_k\right)= \operatorname{cov}\left(\sum_{m=1}^M a_m X_{j m}, \sum_{m=1}^M a_m X_{k m}\right)=\sigma_g^2 K_{\text {causal }}[\mathrm{j}, \mathrm{k}]$
-- $K_{\text {causal }}$: relatedness matrix from causal SNPs  
-  - Cannot compute directly (causal SNPs unknown)  
-- Instead, approximate with:  $K=G G^T / M$ based on all SNPs.
-- Using REML/AI-REML to estimate $\widehat{\sigma_g^2}$
-- $\quad h^2=\frac{\widehat{\sigma_g^2}}{\sigma_Y^2}$
+---
+
+# What questions do you have about INSERT UPDATE DELETE?
+
+---
+
+# Expanding your Database:
+
+## INSERT, UPDATE, DELETE
+
+## $\rightarrow$ Views
+
+## Importing and Exporting Data
+
+## CROSS & Self Joins
 
 
 ---
 
-# Family-based Designs
+# Views
 
-- Family-based studies have a long tradition in genetics (association and linkage)  
-- Example: compare the genotypes of affected individuals with their unaffected siblings  
-- Using siblings as controls removes confounding from **population stratification**  
-
----
-
-# Family-based designs 
-
-- Family-based designs are **robust to confounding** caused by population structure  
-- Rejecting $H_0$ (no association) means more than simple correlation:  
-  - The tested marker is likely **linked** to the true disease locus  
-- In contrast, population-based designs may give false positives due to structure  
-#### Question: why is this robustness lost in population-based studies?  
-----
-
-# Indirect association
-
-- Genetic association studies typically test **markers**, not causal mutations  
-- A marker may be correlated with the true causal variant → this is **indirect association**  
-- **Linkage disequilibrium (LD)** (or correlation) between a marker and a causal locus (DSL) creates an apparent association with the phenotype 
-- Key idea: the marker is not causal, but **tags the causal variant** through LD  
-
-----
-
-# The trio design and Transmission Disequilibrium Test (TDT)
-
-- Setup: **affected offspring** and their **biological parents**  
-- From parental genotypes, Mendel’s laws of segregation predict the expected offspring genotype distribution  
-- **TDT test:** compares observed offspring genotypes with expectations from parental genotypes  
-- Advantage: immune to bias from **population stratification**  
-- If there is a genotype–phenotype association:  
-  - Expect **over- or under-transmission** of certain alleles from parents to offspring  
-----
-<!--
-
-# Application of Mendel’s first law
--->
-# The trio design and Transmission Disequilibrium Test (TDT)
-
-- Each parent has a transmitted allele and an untransmitted allele.
-- w= \#homozygous AA parents and z=\#homozygous aa parents
-- $w$ and $z$ are not informative
-- x=\#heterozygous parents Aa that transmit A allele.
-- $y=\#$ heterozygous parents Aa that transmit a allele.
-- If no association, we have $\mathrm{E}[\mathrm{x}]=\mathrm{E}[\mathrm{y}]$.
-- Hence, conditioning on $\mathrm{x}+\mathrm{y}$, the count x is $\operatorname{Bin}(\mathrm{x}+\mathrm{y}, 0.5)$.
-
-
-----
-
-# The trio design and Transmission Disequilibrium Test (TDT)
-
-### Case-control design is more powerful but less robust than TDT
-
-- Power of TDT is expected to be lower than for case - control design with the same number of cases because, e.g., homozygous parents do not contribute.
-- Also, the trio design is more expensive: three genotypes compared to two in a case-control design.
-- It can be difficult to obtain parental genotypes for late-onset diseases, e.g. Alzheimer's disease.
-- Other family-based designs: discordant sibships, trios with multiple affected siblings, multi-generational pedigrees.
+- Views instantiate a query result permanently
+- They are particularly useful in highly normalized databases, where reproducing a query is tiresome or prone to query errors
+- In databases that have live data flowing in:
+  - Tables that are created from queries need to be continuously updated whenever there is new data
+      - This requires either downtime where the table is empty
+      - Or the chance of a "dirty read" (where a table is read before the data is fully updated)
+  - Views, on the other hand, will always show the most up-to-date values!
 
 ---
 
-# Family-based association test (FBAT)
-
-- Originally, TDT limited to binary data and trio design
-- Many extensions to handle other genetic models, missing data etc.
-- FBAT is a unified family-based approach, an extension of TDT to:
-- Missing parental genotypes, continuous phenotypes, time-to-onset, different genetic models.
-- www.biostat.harvard.edu/~fbat/fbat.htm
-
-----
-
-# FBAT
-
-- FBAT score statistic:
-
-$$
-\begin{aligned}
-U & =\sum_{\substack{\text { family } i, \\
-\text { offspring } j}} Y_{i j}\left(X_{i j}-E\left(X_{i j} \mid P_i\right)\right) \\
-Z & =\frac{U}{\sqrt{\operatorname{Var}(U)}} \sim N(0,1)
-\end{aligned}
-$$
-
-- The centering of the offspring genotype by its expected value conditional on parental genotypes helps maintain robustness to population stratification.
-- If parental genotypes are missing one can use genotypes of other relatives for the conditioning above.
+# Views
 
 
-----
-
-
-# Exercises
-
-1. What is the alternative hypothesis for a TDT test (or any FBAT test), and how does that compare with the alternative of a test of association from a case-control or cohort study? Why is this important from a practical perspective?
-2. The TDT is a conditional test. What are the random variables used in computing the null distribution of the test, and what variables are being conditioned on?
-
-
-
----
-## Complications when testing association with millions of markers in large GWAS studies
-
-- So far, we have discussed one test/one genetic marker at a time.
-- **Multiple testing in GWAS** - millions of tests at once
-- **Meta-analysis of multiple datasets** - combine data/results from multiple studies
-
-
-----
-
-# Multiple Testing 
-
-
+- Views are created just like tables:
+```
+    CREATE VIEW history AS
+    SELECT ...
+```
 ---
 
-# GWAS of Kidney Stone Disease
 
-- In a typical GWAS we perform millions of tests. How do we account for that?  What Significance level should we use?
-  ![Sales Figure, w:900](./images/GWAS1.png) 
+# Views Performance
 
-----
-
-# Multiple Testing
-
-- Multiple testing issues arise when many markers are tested as in GWAS.
-- Major statistical problem as it leads to loss of power, and increased false positive rates if not accounted for.
-- Idea: Test each marker separately and adjust the significance level of each test.
-
-
-----
-
-# Why do we need to adjust for multiple testing?
-
-![Sales Figure, w:700](./images/GWAS2.png) 
-  
-----
-
-# Methods based on P-value Adjustment
-
-- Test each SNP separately and adjust the significance level of each test in order to preserve the overall error rate.
-- Two different error rates:
-  1. Family-wise error rate (FWER)
-  2. False discovery rate (FDR)
-
-- If $M$ is the total number of tested SNPs, then for each $m=1, \ldots, M$, we define the null hypothesis:
-$H_0(m)$ : no association between the $m$-th SNP and the phenotype.
-
-
-----
-
-# Bonferroni method
-
-- **FWER (family-wise error rate)** or experiment-wise error rate:
-$$
-F W E R=P\left(\text { reject at least one } H_0(m) \mid H_0(m) \text { is true for all } m\right)
-$$
-<br>
-
-- **Bonferroni**: fix $F W E R=\alpha$ and set individual significance levels at $\frac{\alpha}{M}$.
-- This ensures that the FWER is less than the desired level $\alpha$ (e.g. 0.05).
-- If markers are not independent (due to linkage disequilibrium) the Bonferroni adjustment is conservative.
-- E.g. extreme case: only one independent marker among $M$ and the true FWER is $\frac{\alpha}{M}$.
-
+- Views can be very slow if poorly created
+- Always use primary keys and indexing to make them more performative
+- Select the most important columns
+- Avoid stacking views (views within a view)
 ---
 
-# Bonferroni threshold for GWAS
+# Views Performance
 
-- The effective number of independent tests in a dense GWAS study is 1 million, so the Bonferroni adjustment corresponds to a significance level of $5 \times 10^{-8}$.
-- This corresponds to a finding by chance 1 in 20 GWAS studies.
-- Large sample sizes are needed for such a stringent threshold.
+- In commercial RDBMs, use execution plans and/or performance dashboards to analyze the underlying engine mechanisms the view uses for instantiation
+- Image: Yaseen, SQLShack
 
----
-
-# False Discovery Rate (FDR)
-
-- Rather than control the Type-1 error, FDR limits the expected number of null-hypotheses that are rejected incorrectly.
-- FDR=5\% means that on average 5\% of the SNPs we rejected are in fact false positives.
-- FDR is less conservative than FWER $\rightarrow$ higher power.
-- FDR is less accepted in the GWAS setting, but useful for GWAS where results are followed up.
-
-
----
-
-# False Discovery Rate (FDR)
-
-|  | Declared non- <br> significant | Declared <br> significant |  |
-| :--- | :--- | :--- | :--- |
-| True null <br> hypotheses | $U$ | $V$ | $M_{0}$ |
-| False null <br> hypotheses | $T$ | $S$ | $M-M_{0}$ |
-|  | $M-R$ | $R$ | $M$ |
-
-- Assume there are $M$ independent markers.
-- The false discovery rate is $\mathrm{E}\left(\frac{V}{R}\right)$ (expectation of false discovery proportion).
-- Goal: keep the FDR below a specific threshold, e.g. 0.05 or 0.10.
-
-----
-
-# Benjamini–Hochberg (BH) procedure
-
-- Benjamini and Hochberg (1995) procedure can be used to control the FDR.
-- Rank the $M$ p-values from smallest to largest:
-
-$$
-p_{(1)}, \ldots, p_{(M)}
-$$
-
-- For a specified FDR level (e.g. 0.05), compare
-
-$$
-p_{(i)} \leq \frac{i}{m} F D R
-$$
-
-- Find largest $i$ for which this inequality holds, and then reject tests that correspond to $1, \ldots, i$.
-- For dependent tests, extensions are available (e.g. Benjamini-Yekutieli 2001).
+![bg right:50% w:500](./images/05_example_view_optimization.png)
 
 ---
 
 
-# Example
+# Views
 
-<small>
+(Views live coding)
 
-| $i$ | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
-| :---: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| $p_{(i)}$ | 0.002 | 0.005 | 0.006 | 0.008 | 0.009 | 0.009 | 0.017 | 0.025 | 0.105 | 0.54 |
-| $10 \frac{p_{(i)}}{i}$ | 0.02 | 0.022 | 0.02 | 0.02 | 0.017 | 0.015 | 0.025 | 0.031 | 0.11 | 0.54|
+---
 
-</small>
-FDR = 5% reject hypotheses 1-8 –> more than Bonferroni that rejects only two.
+# What questions do you have about views?
+
+---
+
+
+
+# Expanding your Database:
+
+## INSERT, UPDATE, DELETE
+
+## Views
+
+## $\rightarrow$ Importing and Exporting Data
+
+## CROSS & Self Joins
+
+---
+
+
+# Import & Export
+- RDBMs allow data to flow into and out of them
+  - Some processes are easy:
+      - e.g. exporting a table as a CSV file
+  - ...while others are complex
+      - e.g. writing a CRM to a normalized data warehouse on a nightly basis
+- In DB Browser for SQLite, we can make use of the following:
+  - Import and export CSV files
+  - Manipulate and export JSON files
+- SQLite more broadly can:
+  - Produce CSVs from queries (using the command line, which we won't do)
+  - Connect to other programming languages
+
+---
+
+# CSV
+- CSV stands for "Comma Separated Values"
+- CSVs are file formats well designed to store SQL tables
+  - The values of each row are separated by commas
+      - Sometimes it makes more sense to use a "|" (pipe), if there is complex text data stored, which might be more sensitive to the presence of commas and/or line breaks
+- They are a common file format for transporting structured data 
+- CSVs can be opened by:
+  - Excel
+  - Simple text editors (e.g. notepad++, sublime)
+  - Programming languages (e.g. python, R)
 
 
 ---
 
-# Meta-analysis
+# CSV
 
+DB Browser for SQLite natively supports CSV importing and exporting for tables:
 
-----
+![bg right:50% w:500](./images/05_import_export_menu.png)
 
-# Meta-analysis
-
-- Meta-analysis is essential in GWAS.
-- GWAS studies are extremely large $\rightarrow$ require combining many smaller cohorts.
-  - Example: the largest GWAS on height (2022) analyzed 5.4 million individuals across diverse ancestries and identified 12,111 independent SNPs.
-- Purpose: to combine information from multiple independent studies.
+You can also export queries if they are stored in Temporary Tables
 
 ---
 
-# Meta-analysis
 
-- Combines information from multiple independent studies.
-- Increases statistical power by boosting sample size.
-- Helps assess consistency of findings across datasets.
-- Methods:
-  - Combine $p$-values or Z-scores (e.g., Fisher's method).
-  - Combine effect sizes.
+# CSV
+DB Browser for SQLite allows us to extract a query result in a somewhat roundabout method:
+- First, write a query
+```
+    SELECT * FROM product p
+    JOIN product_category pc ON p.product_category_id = pc.product_category_id
+```
+- Second, right click the results, and select "Copy as SQL"
 
-----
+---
+# CSV
 
-# Combine p-values or Z-scores
+- Third, instantiate a table with `CREATE`
+```
+CREATE TABLE "example" ("product_id", "product_name", "product_size", 
+"product_category_id", "product_qty_type", "product_category_name") ;
+```
 
-- Combine p -values $p_{m k}$ for variant $m$ and stage $k$ using **Fisher's method**:
-
-$$
-X_{2 K}^2=-2 \sum_{k=1}^K \ln \left(p_{m k}\right) \sim \chi_{2 K}^2.
-$$
-
-- This approach does not take into account sample size differences between studies.
-- We would like to give more weight to the larger studies, we can combine Z-scores:
-
-$$
-Z_m=\left(\frac{1}{\sqrt{\sum_k n_k}} \sum_k \sqrt{n_k} Z_{m k}\right) \sim N(0,1).
-$$
+- Fourth, paste the results from your clipboard
+```
+INSERT INTO "example" ("product_id", "product_name", "product_size", 
+"product_category_id", "product_qty_type", "product_category_name") 
+VALUES ('1', 'Habanero Peppers - Organic', 'medium', '1', 'lbs', 'Fresh Fruits & Vegetables');
+...etc for each row
+```
+- Finally, export the table to CSV
 
 ---
 
-# Fixed-effects meta-analysis
+# CSV
 
-- Constant effect size across studies.
-- Observed effect size in each study varies due to random sampling error.
-- **Combined effect estimates the fixed effect size (the same underlying parameter across studies)**.
-- Might be realistic if, for example, the studies have all been conducted in the same population, consistently measured phenotypes, same inclusion criteria etc.
-- In practice, that may not be true.
+We can also extract a query result to CSV with python:
 
-----
+```
+import pandas as pd
+import sqlite3
 
-# Random-effects meta analysis
+#set your location, slash direction will change for windows and mac
+DB = '/Users/thomas/Documents/GitHub/DSI_SQL/SQL/FarmersMarket.db' 
 
-Random-effects meta-analysis.
-- True effect size may vary from study to study (so there is a study-specific true effect).
-- Observed effect size in each study varies due to both random error and differences in true effect sizes across studies.
-- **Combined effect estimates the mean of the distribution of true effects**.
+#establish your connection
+conn = sqlite3.connect(DB, isolation_level=None,
+                       detect_types=sqlite3.PARSE_COLNAMES)
+                       
+#run your query, use "\" to allow line breaks
+db_df = pd.read_sql_query("SELECT p.*,pc.product_category_name \
+                          FROM product p \
+                          JOIN product_category pc \
+                             ON p.product_category_id = pc.product_category_id"
+                          ,conn)
 
-
----
-
-# Fixed-effect model
-
-- We assume we have $K$ studies.
-- Let $\hat{\beta}_1, \ldots, \hat{\beta}_K$ be the effect-size estimates (e.g. $\log (O R)$ or regression coefficients).
-- Let $\hat{\sigma}_i=S E\left(\hat{\beta}_i\right)^2$ (within study variance) and $w_i=\hat{\sigma}_i{ }^{-1}$.
-- The overall inverse-variance-weighted effect-size is:
-
-$$
-\hat{\beta}=\frac{\sum_{i=1}^K w_i \widehat{\beta}_i}{\sum_{i=1}^K w_i}.
-$$
-
-----
-
-# Fixed-effect model
-
-- $\hat{\beta}$ follows a normal distribution, with $\operatorname{SE}(\hat{\beta})=1 / \sqrt{\sum_{i=1}^K w_i}$.
-
-$$
-\hat{\beta}^{\sim} \mathrm{N}\left(\beta,\left(\sum_{i=1}^K w_i\right)^{-1}\right)
-$$
-
-- Larger studies are given higher weight compared with smaller studies. So if one very large study and other small studies, the large study will dominate.
-
-
+#save
+db_df.to_CSV('database-py.CSV', index=False)
+```
 
 ---
 
-# Random-effect model
 
-- In the RE model, we assume that the true effects $\beta_i=\beta+ \xi_i, \xi_i \sim N\left(0, \tau^2\right)$.
-- The overall effect-size is estimated as:
+# CSV
 
-$$
-\hat{\beta}=\frac{\sum_{i=1}^K w_i^* \hat{\beta}_i}{\sum_{i=1}^K w_i^*}
-$$
-
-- $w_i^*=\left(\hat{\sigma}_i+\hat{\tau}^2\right)^{-1}$.
-- The weight here depends both on the within study variance and also on the between-study heterogeneity in true effects.
-- $$
-  \hat{\beta} \sim \mathrm{N}\left(\beta,\left(\sum_{i=1}^K w_i^*\right)^{-1}\right).$$
-
-
-----
-
-# Random-effect model
-
-- $w_i^*=\left(\hat{\sigma}_i+\hat{\tau}^2\right)^{-1}\left(\right.$ in fixed effect $\left.w_i=\hat{\sigma}_i{ }^{-1}\right)$
-- Smaller studies are given relatively more weight than in the fixed effect model
-- The calculated standard error is smaller from a fixed effects meta-analysis than that from a random-effects meta-analysis.
-- How to estimate the between-study variance $\hat{\tau}^2$ ?
-- Many different methods, e.g. DerSimonian and Laird (DL)
-
+(CSV live importing to update our view, CSV live exporting)
 
 ---
 
-# Fixed vs. Random Effect model
+# JSON
 
-- The decision needs to be done before the analysis based on knowledge about the individual studies
-- **Fixed effect meta-analysis is typically used in genetics**, without regard to heterogeneity.
-- Random effect meta-analysis is typically too conservative (less powerful).
+- JSON stands for "JavaScript Object Notation"
+- JSONs are file formats well designed to store tables, lists, arrays, and nested objects
+  - Their syntax follows specific rules:
+      - Data is in name/value pairs
+      - Data is separated by columns
+      - Curly brackets '{ }' hold objects
+      - Square brackets '[ ]' hold arrays
+---
+# JSON
 
+  -  e.g. `{"first_name":"Ralph", "last_name":"Kimball"}`
+  - or for tables: 
+```
+    [ {"first_name":"Ralph", "last_name":"Kimball"},
+        {"first_name":"Bill", "last_name":"Imnom"} ]
+```
 
-----
-
-### Meta-analysis of three GWAS studies assessing the link between the FTO rs8050136 variant and type 2 diabetes
-
-![Sales Figure, w:700](./images/GWAS3.png) 
+- JSON can be opened by:
+  - Web browsers
+  - Simple text editors (e.g. notepad++, sublime)
+  - Programming languages (e.g. python, R)
+- SQLite also provides support for JSON value query and manipulation
 
 ---
 
-# What's Next
+# JSON
 
-- Population Stratification
-- Genotype Imputation
-- Quality Control
+DB Browser for SQLite supports a lot of JSON functions:
+  - Some are helper functions:
+    - `JSON` and `JSON_VALID`, which confirm whether or not a string is JSON and/or in a valid JSON format
+    - `JSON_TYPE`
+      - When using extracting, type will help to inform column types that SQL will assume, based on the JSON
+  - Other functions can be used for manipulation or extraction:
+  - `JSON_EXTRACT` will allow you to return the values of a well-formed JSON string into desired parts
+    - Importing JSON into SQL will use either `JSON_EXTRACT` or `JSON_EACH`
 
-## What questions do you have about anything from today?
+---
+
+# JSON
+  - SQLite gives the following (fairly comprehensive) example set:
+```
+      - `json_extract('{"a":2,"c":[4,5,{"f":7}]}', '$')` → '{"a":2,"c":[4,5,{"f":7}]}'
+      - `json_extract('{"a":2,"c":[4,5,{"f":7}]}', '$.c')` → '[4,5,{"f":7}]'
+      - `json_extract('{"a":2,"c":[4,5,{"f":7}]}', '$.c[2]')` → '{"f":7}'
+      - `json_extract('{"a":2,"c":[4,5,{"f":7}]}', '$.c[2].f')` → 7
+      - `json_extract('{"a":2,"c":[4,5],"f":7}','$.c','$.a')` → '[[4,5],2]'
+      - `json_extract('{"a":2,"c":[4,5],"f":7}','$.c[#-1]')` → 5
+      - `json_extract('{"a":2,"c":[4,5,{"f":7}]}', '$.x')` → NULL
+      - `json_extract('{"a":2,"c":[4,5,{"f":7}]}', '$.x', '$.a')` → '[null,2]'
+      - `json_extract('{"a":"xyz"}', '$.a')` → 'xyz'
+      - `json_extract('{"a":null}', '$.a')` → NULL
+```
+---
+
+# JSON
+
+Importing a JSON array (table) into SQL with DB Browser for SQLite requires a bit more of nuanced approach:
+- First copy and paste your JSON table array into SQLite, and put it in a temp table:
+
+```
+CREATE TEMP TABLE IF NOT EXISTS temp.[new_json]
+(col BLOB);
+
+INSERT INTO temp.[new_json](col)
+VALUES('[{"a": 7, "b": "string"}]')
+```
+
+---
+
+# JSON
+
+- Second, use the `JSON_EACH` function as a table-valued function
+
+```
+SELECT key,value
+FROM new_json,JSON_EACH(new_json.col, '$' )
+```
+- Third, use this previous query as a subquery and combine with `JSON_EXTRACT`, using the value column `JSON_EACH` generated
+```
+SELECT * ,
+JSON_EXTRACT(value, '$.a') AS a,
+JSON_EXTRACT(value, '$.b') AS b
+
+FROM (...{subquery goes here}...)
+```
+- You now have a normal SQL table from a JSON array!
+
+---
 
 
-<!--
+# JSON
 
-Exercises
+- DB Browser for SQLite natively supports JSON exporting for tables 👉
 
-Chapter 9 Exercise 1.
-Chapter 9 Exercise 2.
-Chapter 9 Exercise 3.
-Chapter 9 Exercise 4.
-Chapter 9 Exercise 5.
---->
+![bg right:50% w:500](./images/05_export_json.png)
 
+- This also works for Temporary Tables, so queries can be exported as well
+
+---
 
 
+# JSON
+
+(JSON live exporting)
+
+---
+
+
+### What questions do you have about Importing and Exporting data into SQL?
+
+---
+
+
+# Expanding your Database:
+
+## INSERT, UPDATE, DELETE
+
+## Views
+
+## Importing and Exporting Data
+
+## $\rightarrow$ CROSS & Self Joins
+
+---
+
+# CROSS JOIN
+
+- `CROSS JOIN` creates an unfiltered Cartesian Product
+- They are not joined on any columns
+- Recall our deck of cards example in Session 2:
+```
+    SELECT suit, rank
+    FROM suits
+    CROSS JOIN ranks
+```  
+  - Because tables 'suits' and 'ranks' contain no common columns, we would have no other means to join
+
+---
+
+# CROSS JOIN
+
+- I love to `CROSS JOIN`!
+- They can be super useful when used correctly 
+  - **What are some good examples that could be useful?** 💭💬 **Think, Pair, Share**
+
+---
+
+
+# CROSS JOIN
+
+(`CROSS JOIN` live coding)
+
+```
+No complex query is complete without at least one `CROSS JOIN` 
+
+- (me, jokingly)
+```
+---
 
 
 
+# What questions do you have about CROSS JOIN?
+
+---
+
+# Self Joins
+
+- Self Joins are somewhat uncommon, but are the last type of possible join
+- They are useful for comparison:
+  - Determine maximum to-date 
+  - Generating pairings 
+- They can help with hierarchy
+  - Child-to-Parent relationships 
+
+---
+
+# Self Joins
+
+- The syntax is as we might expect:
+
+```
+    SELECT
+    e.name as employee_name,
+    m.name as manager_name
+    
+    FROM people e
+    LEFT JOIN people m ON e.manager_id = m.id
+```    
+
+---
+
+# What questions do you have about anything from today?
